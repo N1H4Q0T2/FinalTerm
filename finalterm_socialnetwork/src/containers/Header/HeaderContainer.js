@@ -4,7 +4,7 @@ import { Header } from '../../components';
 
 class HeaderContainer extends React.Component {
 	render() {
-		return <Header/>;
+		return <Header onLogOut={this.props.onLogOut}/>;
 	}
 }
 
@@ -13,7 +13,11 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => {
-	return {};
+	return {
+		onLogOut: () => {
+			alert('LOGOUT');
+		},
+	};
 };
 
 export default connect(

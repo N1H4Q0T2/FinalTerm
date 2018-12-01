@@ -1,6 +1,21 @@
 
-.container {
+.Header_container {
   width: 100%;
   height: 100px;
-  background-color: #42a5f5
+  background-color: #1c313a;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.Header_LogOutButton {
+  background-color: #1c313a;
+  border: none;
+  color: white;
+  font-weight: bold;
+  letter-spacing: 5px;
+  outline: none;
+  margin-right: 100px;
+  cursor: pointer;
 }
