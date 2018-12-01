@@ -1,3 +1,4 @@
 import Dashboard from './Dashboard/DashboardContainer';
+import Header from './Header/HeaderContainer';
 
-export { Dashboard };
+export { Dashboard, Header };

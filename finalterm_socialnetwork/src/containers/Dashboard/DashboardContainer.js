@@ -26,7 +26,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
 	return {
-		testing: () => dispatch(testing('Dashboard')),
+		testing: () => dispatch(testing('dsds')),
 	};
 };
 

@@ -1,8 +1,8 @@
 import React from 'react';
+import {Header} from '../../containers';
 
 const Dashboard = props => (
 	<div>
-		<p>{props.data}</p>
 	</div>
 );
 

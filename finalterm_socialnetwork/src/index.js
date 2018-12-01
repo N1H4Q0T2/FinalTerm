@@ -4,6 +4,7 @@ import { createStore, combineReducers } from 'redux';
 import { Provider } from 'react-redux';
 import * as reducers from './reducers';
 import getRoutes from './config/routes';
+import './index.css';
 
 const store = createStore(
 	combineReducers({
