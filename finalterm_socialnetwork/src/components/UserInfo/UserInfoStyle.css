@@ -1,0 +1,88 @@
+.UserInfo_Container {
+  margin-left: 150px;
+  margin-top: 50px;
+  width: 300px;
+  border-radius: 3px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.UserInfo_Div1{
+  display: flex;
+  flex-direction: column;
+}
+
+.userInfo_Div2 {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.UserInfo_Image {
+  width: 180px;
+  height: 180px;
+  border-radius: 100px;
+  background-size: cover;
+}
+
+.UserInfo_Name {
+  width: 290px;
+  font-weight: bolder;
+  margin-top: 20px;
+  letter-spacing: 1.5px;
+  font-size: 20px;
+  text-transform: uppercase;
+}
+
+.UserInfo_Field {
+  font-weight: 200;
+  letter-spacing: 1.08px;
+}
+
+.UserInfo_Content {
+  margin-left: 10px;
+}
+
+.UserInfo_FollowerNFollowing {
+  color: #1c313a;
+  font-weight: bolder;
+}
+
+.UserInfo_EditProfile {
+  font-weight: 200;
+  text-decoration: underline;
+  font-style: italic;
+  cursor: pointer;
+}
+
+.UserInfo_EditUserName {
+  margin-top: 20px;
+  border-radius: 3px;
+  border-style: groove;
+  background-color: #E6ECF0;
+  font-size: 20px;
+  font-weight: bold;
+  text-transform: uppercase;
+  padding: 2px;
+}
+
+.UserInfo_EditDateOfBirth{
+  margin-top: 5px;
+  margin-left: 10px;
+  border-radius: 3px;
+  border-style: groove;
+  background-color: #E6ECF0;
+  font-weight: bold;
+  padding: 2px;
+}
+
+.UserInfo_Cancel{
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.UserInfo_SaveProfile{
+  margin-left: 20px;
+}

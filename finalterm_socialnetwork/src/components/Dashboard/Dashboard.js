@@ -1,8 +1,9 @@
 import React from 'react';
-import {Header} from '../../containers';
+import { UserInfo } from '../../containers';
 
 const Dashboard = props => (
 	<div>
+		<UserInfo />
 	</div>
 );
 
