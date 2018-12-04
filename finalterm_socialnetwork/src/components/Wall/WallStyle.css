@@ -1,8 +1,88 @@
 .Wall_Container {
-  margin-left: 150px;
+  margin-left: 100px;
   margin-top: 50px;
-  width: 700px;
+  width: 800px;
   height: 800px;
   background-color: white;
-  border-radius: 3px;
+  border-radius: 3px; 
+
+  overflow: hidden;
+}
+
+.Wall_List {
+  width: 100%;
+  height: 100%;
+  overflow-y: scroll;
+  box-sizing: content-box; /* So the width will be 100% + 17px */
+  margin-left: -15px;
+}
+
+.Wall_Post_Container {
+  width: 750px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.Wall_Post_div1 {
+  width: 100%;
+  height: 100px;
+  display: flex;
+  flex-direction: row;
+}
+
+.Wall_Post_div2 {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  margin-top: 50px;
+  margin-bottom: 20px;
+}
+
+.Wall_Post_Line{
+  width: 100%;
+  height: 1px;
+  background-color: #E6ECF0;
+  margin-bottom: 10px;
+}
+
+.Wall_Post_Image {
+  width: 50px;
+  height: 50px;
+  border-radius: 50px;
+}
+
+.Wall_Post_PostContent {
+  font-size: 15px;
+  width: 100%;
+  margin-left: 20px;
+}
+
+.Wall_Post_ActionButton {
+  margin-left: 10px;
+  margin-right: 10px;
+  background-color: white;
+  cursor: pointer;
+  border: none;
+  font-size: 16px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  outline: none;
+}
+
+.Wall_Post_Statistic {
+  font-size: 12px;
+  font-weight: 500;
+  font-style: italic
+}
+
+.Wall_Post_Icon {
+  width: 15px;
+  height: 15px;
+  margin-right: 5px;
+  margin-left: 20px;
+}
+
+.Wall_Post_Sub1{
+  margin-right: 275px;
 }
