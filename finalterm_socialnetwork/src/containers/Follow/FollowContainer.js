@@ -4,7 +4,7 @@ import { Follow } from '../../components';
 
 class FollowerContainer extends React.Component {
 	render() {
-		return <Follow />;
+		return <Follow data={this.props.tmp} title={this.props.title}/>;
 	}
 }
 

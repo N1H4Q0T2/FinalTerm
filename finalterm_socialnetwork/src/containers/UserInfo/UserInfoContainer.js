@@ -41,8 +41,8 @@ class UserInfoContainer extends React.Component {
 			<div>
 				<UserInfo
 					data={this.props.data}
-					follower={'10'}
-					following={'20'}
+					follower={this.props.follower}
+					following={this.props.following}
 					onEditProfileClick={this.props.onEditProfileClick}
 					updateEditUsername={this.updateEditUsername}
 					updateEditDateOfBirth={this.updateEditDateOfBirth}
