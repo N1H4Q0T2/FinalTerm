@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Dashboard } from '../../components';
-import { testing } from '../../actions/TestAction';
+import { test } from '../../lib/test';
 
 class DashboardContainer extends React.Component {
 	componentDidMount() {
@@ -26,7 +26,9 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
 	return {
-		testing: () => dispatch(testing('dsds')),
+		testing: () => {
+			test();
+		},
 	};
 };
 
