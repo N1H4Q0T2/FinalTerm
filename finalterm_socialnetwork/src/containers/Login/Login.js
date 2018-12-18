@@ -7,7 +7,7 @@ import {
 	update_PrivateKey,
 	update_PublicKey,
 	update_isLogin,
-	update_Balance
+	update_Balance,
 } from '../../actions/UserProfileReducer';
 import { updateRoute } from '../../actions/RouteReducerActions';
 import * as api from '../../config/api';
@@ -15,7 +15,7 @@ import * as v1 from '../../lib/tx/v1';
 
 class LoginContainer extends React.Component {
 	onLogin = () => {
-		this.props.onLogin(this.props.publicKey);
+		this.props.onLogin(this.props.publicKey, this.props.balance);
 		this.props.history.push({
 			pathname: '/dashboard',
 		});
@@ -23,7 +23,6 @@ class LoginContainer extends React.Component {
 	};
 
 	render() {
-		console.log('fdjkdls');
 		return (
 			<Login
 				publicKey={this.props.publicKey}
@@ -37,9 +36,11 @@ class LoginContainer extends React.Component {
 }
 
 const mapStateToProps = state => {
+	console.log('Your balance: ' + state.UserProfileReducer.balance);
 	return {
 		publicKey: state.UserProfileReducer.publicKey,
 		privateKey: state.UserProfileReducer.privateKey,
+		balance: state.UserProfileReducer.balance,
 	};
 };
 
@@ -51,33 +52,39 @@ const mapDispatchToProps = dispatch => {
 		update_PrivateKey: data => {
 			return dispatch(update_PrivateKey(data));
 		},
-		onLogin: async publicKey => {
-			const url = `${api.API_GET_ACCOUNT_TRANSACTIONS}${publicKey}%27%22`;
-			const response = await axios({
-				url,
-				method: 'GET',
-			});
-			if (response.status == 200) {
-				if (response.data.result.total_count !== 0) dispatch(update_isLogin());
-				const transactions = response.data.result.txs.map(item => {
-					const data = Buffer.from(item.tx, 'base64');
-					const transaction = v1.decode(data);
-					return transaction;
-				});
-				const result = transactions.filter(item => {
-					return item.operation === 'payment';
-				});
-				var balance = 0;
-				for (var i = 0; i < result.length; i++) {
-					if (result[i].account != publicKey) {
-						balance = balance + result[i].params.amount;
-					} else {
-						balance = balance - result[i].params.amount;
-					}
+		onLogin: async (publicKey, YourBalance) => {
+			var url = `${api.API_GET_ACCOUNT_TRANSACTIONS}${publicKey}%27%22`;
+			const per_page = 50;
+			axios.get(url).then(res => {
+				const total_count = res.data.result.total_count;
+				const total_page = Math.floor(total_count / per_page) + 1;
+				console.log('Totoal page: '+total_page);
+				for (var i = 0; i < total_page; i++) {
+					var url2 = `${
+						api.API_GET_ACCOUNT_TRANSACTIONS
+					}${publicKey}%27%22&page=${i+1}&per_page=${per_page}`;
+					axios.get(url2).then(response => {
+						const transactions = response.data.result.txs.map(item => {
+							const data = Buffer.from(item.tx, 'base64');
+							const transaction = v1.decode(data);
+							return transaction;
+						});
+						console.log(transactions);
+						const result = transactions.filter(item => {
+							return item.operation === 'payment';
+						});
+						var balance = 0;
+						for (var k = 0; k < result.length; k++) {
+							if (result[k].account != publicKey) {
+								balance = balance + result[k].params.amount;
+							} else {
+								balance = balance - result[k].params.amount;
+							}
+						}
+						dispatch(update_Balance(balance));
+					});
 				}
-				const data = parseInt(balance);
-				dispatch(update_Balance(data));
-			}
+			});
 		},
 		updateRoute: data => {
 			return dispatch(updateRoute(data));

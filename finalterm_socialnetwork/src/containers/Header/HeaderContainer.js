@@ -39,7 +39,6 @@ class HeaderContainer extends React.Component {
 }
 
 const mapStateToProps = state => {
-	console.log(state.RouteReducer);
 	return {
 		currentRoute: state.RouteReducer.currentRoute,
 	};

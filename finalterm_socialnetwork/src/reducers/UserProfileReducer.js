@@ -13,7 +13,7 @@ const inititalState = {
 	privateKey: 'SDKGX6GW3YCUS34RPT3OM5UAJKHG4YINWFNO2LRGWGO5WR3LLRZSP63A',
 	userName: 'NGUYEN HO QUOC THINH',
 	dateOfBirth: 'Feb 14 1997',
-	balance: 10000000,
+	balance: 0,
 	isEditing: false,
 };
 
@@ -53,7 +53,7 @@ const UserProfileReducer = (state = inititalState, action) => {
 	case UPDATE_BALANCE: {
 		return {
 			...state,
-			balance: action.data,
+			balance: parseInt(state.balance)+parseInt(action.data),
 		};
 	}
 	default:
