@@ -20,6 +20,7 @@ function decode(data) {
 	switch (versionTx.version) {
 	case 1:
 		return v1.decode(data);
+
 	default:
 		throw Error('Unsupport version');
 	}
@@ -39,6 +40,7 @@ function getUnsignedHash(tx) {
 
 function sign(tx, secret) {
 	const key = Keypair.fromSecret(secret);
+	tx.account = key.publicKey();
 	tx.signature = key.sign(getUnsignedHash(tx));
 }
 

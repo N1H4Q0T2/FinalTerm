@@ -3,5 +3,6 @@ import Header from './Header/HeaderContainer';
 import UserInfo from './UserInfo/UserInfoContainer';
 import Wall from './Wall/WallContainer';
 import Follow from './Follow/FollowContainer';
+import TransferMoney from './TransferMoney/TransferMoney';
 
-export { Dashboard, Header, UserInfo, Wall, Follow };
+export { Dashboard, Header, UserInfo, Wall, Follow, TransferMoney };
