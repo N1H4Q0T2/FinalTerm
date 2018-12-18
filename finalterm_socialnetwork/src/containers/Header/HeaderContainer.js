@@ -14,15 +14,22 @@ class HeaderContainer extends React.Component {
 
 	onHome = () => {
 		this.props.history.push({
+			pathname: '/dashboard',
+		});
+		this.props.updateRoute('/dashboard');
+	};
+
+	onLogOut = () => {
+		this.props.history.push({
 			pathname: '/',
 		});
 		this.props.updateRoute('/');
-	};
+	}
 
 	render() {
 		return (
 			<Header
-				onLogOut={this.props.onLogOut}
+				onLogOut={this.onLogOut}
 				onTransfer={this.onTransfer}
 				onHome={this.onHome}
 				currentRoute={this.props.currentRoute}
@@ -32,6 +39,7 @@ class HeaderContainer extends React.Component {
 }
 
 const mapStateToProps = state => {
+	console.log(state.RouteReducer);
 	return {
 		currentRoute: state.RouteReducer.currentRoute,
 	};

@@ -1,6 +1,13 @@
-import { EDITING, UPDATE_PROFILE } from '../actions/UserProfileReducer';
+import {
+	EDITING,
+	UPDATE_PROFILE,
+	UPDATE_PRIVATEKEY,
+	UPDATE_PUBLICKEY,
+	UPDATE_ISLOGIN
+} from '../actions/UserProfileReducer';
 
 const inititalState = {
+	isLogin: false,
 	publicKey: 'GDJXKJMBXBSRCPN6LOYYASV7U5WIG5ZHOUW7D3X5I6AVEUHFVANTLH5K',
 	privateKey: 'SDKGX6GW3YCUS34RPT3OM5UAJKHG4YINWFNO2LRGWGO5WR3LLRZSP63A',
 	userName: 'NGUYEN HO QUOC THINH',
@@ -21,6 +28,24 @@ const UserProfileReducer = (state = inititalState, action) => {
 			...state,
 			userName: action.data.userName,
 			dateOfBirth: action.data.dateOfBirth,
+		};
+	}
+	case UPDATE_PUBLICKEY: {
+		return {
+			...state,
+			publicKey: action.data,
+		};
+	}
+	case UPDATE_PRIVATEKEY: {
+		return {
+			...state,
+			privateKey: action.data,
+		};
+	}
+	case UPDATE_ISLOGIN: {
+		return {
+			...state,
+			isLogin: !state.isLogin,
 		};
 	}
 	default:

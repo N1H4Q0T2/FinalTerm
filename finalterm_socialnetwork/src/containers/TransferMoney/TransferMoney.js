@@ -23,7 +23,7 @@ class TransferMoneyContainer extends React.Component {
 			this.props.address
 		);
 		this.props.history.push({
-			pathname: '/',
+			pathname: '/dashboard',
 		});
 	};
 

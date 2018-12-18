@@ -4,5 +4,6 @@ import UserInfo from './UserInfo/UserInfoContainer';
 import Wall from './Wall/WallContainer';
 import Follow from './Follow/FollowContainer';
 import TransferMoney from './TransferMoney/TransferMoney';
+import Login from './Login/Login';
 
-export { Dashboard, Header, UserInfo, Wall, Follow, TransferMoney };
+export { Dashboard, Header, UserInfo, Wall, Follow, TransferMoney, Login };
