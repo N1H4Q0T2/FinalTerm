@@ -3,6 +3,7 @@ export const UPDATE_PROFILE = 'UPDATE_PROFILE';
 export const UPDATE_PUBLICKEY = 'UPDATE_PUBLICKEY';
 export const UPDATE_PRIVATEKEY = 'UPDATE_PRIVATEKEY';
 export const UPDATE_ISLOGIN = 'UPDATE_ISLOGIN';
+export const UPDATE_BALANCE = 'UPDATE_BALANCE';
 
 export const isEditing = () => ({
 	type: EDITING,
@@ -25,4 +26,9 @@ export const update_PrivateKey = data => ({
 
 export const update_isLogin = () => ({
 	type: UPDATE_ISLOGIN,
+});
+
+export const update_Balance = data => ({
+	type: UPDATE_BALANCE,
+	data: data,
 });

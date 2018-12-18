@@ -4,10 +4,6 @@ import { Dashboard } from '../../components';
 import { test } from '../../lib/test';
 
 class DashboardContainer extends React.Component {
-	componentDidMount() {
-		this.props.testing();
-	}
-
 	render() {
 		return (
 			<div>
@@ -26,9 +22,6 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
 	return {
-		testing: () => {
-			test();
-		},
 	};
 };
 

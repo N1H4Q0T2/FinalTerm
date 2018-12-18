@@ -24,6 +24,12 @@ const UserInfo = props => (
 					/>
 				</div>
 				<div className="userInfo_Div2">
+					<span className="UserInfo_Field">Balance: </span>
+					<span className="UserInfo_Content UserInfo_FollowerNFollowing">
+						{props.data.balance} CEL
+					</span>
+				</div>
+				<div className="userInfo_Div2">
 					<span className="UserInfo_Field">Follower: </span>
 					<span className="UserInfo_Content UserInfo_FollowerNFollowing">
 						{props.follower}
@@ -53,6 +59,12 @@ const UserInfo = props => (
 				<div className="userInfo_Div2">
 					<span className="UserInfo_Field">Date of birth: </span>
 					<span className="UserInfo_Content">{props.data.dateOfBirth}</span>
+				</div>
+				<div className="userInfo_Div2">
+					<span className="UserInfo_Field">Balance: </span>
+					<span className="UserInfo_Content UserInfo_FollowerNFollowing">
+						{props.data.balance} CEL
+					</span>
 				</div>
 				<div className="userInfo_Div2">
 					<span className="UserInfo_Field">Follower: </span>
