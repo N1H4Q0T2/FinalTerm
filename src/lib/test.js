@@ -4,6 +4,7 @@ import * as key from '../config/key';
 import * as api from '../config/api';
 import { Keypair } from 'stellar-base';
 import axios from 'axios';
+const vstruct = require('varstruct');
 
 const createAcccount = async () => {
 	const account = key.publicKey1;
@@ -59,10 +60,13 @@ const readAllTransactionsOfOneACcount = async account => {
 				const transaction = v1.decode(data);
 				console.log(transaction);
 				if (transaction.operation === 'post') {
-					console.log(transaction.params.content);
-					const y = Buffer.from(transaction.params.content, 'base64');
-					console.log(y);
-					const x = v1.decode(y);
+					try {
+						const y = Buffer.from(transaction.params.content, 'base64');
+						const x = PlainTextContent.decode(y);
+						console.log(x);
+					} catch (e) {
+						console.log();
+					}
 				}
 			});
 		} else {
@@ -136,6 +140,11 @@ const transferMoney = async (account, accountPrivateKey, address) => {
 	}
 };
 
+const PlainTextContent = vstruct([
+	{ name: 'type', type: vstruct.UInt8 },
+	{ name: 'text', type: vstruct.VarString(vstruct.UInt16BE) },
+]);
+
 const postContent = async (account, privateKey) => {
 	var url = api.API_GET_ACCOUNT_TRANSACTIONS + account + '%27%22';
 	const accountTransactions = await axios({
@@ -152,20 +161,25 @@ const postContent = async (account, privateKey) => {
 			return item.account === account;
 		});
 		const sequence = accountTrans.length + 1;
-		const content = 'Hello word';
-		var data = new Buffer.from(content, 'utf-8');
+		const content =
+			'Nguyen Ho Quoc Thinh vừa post bài';
+		let post_content = PlainTextContent.encode({
+			type: 1,
+			text: content,
+		});
 		const tx = {
 			version: 1,
 			operation: 'post',
 			account: account,
 			params: {
-				content: data,
+				content: post_content,
 				keys: [],
 			},
 			sequence: sequence,
 			memo: Buffer.alloc(0),
 		};
 		transaction.sign(tx, privateKey);
+		console.log(tx);
 		const txEncode = '0x' + transaction.encode(tx).toString('hex');
 		url = `${api.API_COMMIT_TRANSACTION}${txEncode}`;
 		const res = await axios({
@@ -177,8 +191,9 @@ const postContent = async (account, privateKey) => {
 };
 
 const test = () => {
-	//readAllTransactionsOfOneACcount(key.publicKey1);
-	calculateAccountBalance(key.publicKey1);
+	readAllTransactionsOfOneACcount(key.publicKey1);
+	// calculateAccountBalance(key.publicKey1);
+	//postContent(key.publicKey1, key.privateKey1);
 	//postContent(key.publicKey1, key.privateKey1);
 };
 
