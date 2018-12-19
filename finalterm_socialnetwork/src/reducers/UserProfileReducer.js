@@ -5,6 +5,7 @@ import {
 	UPDATE_PUBLICKEY,
 	UPDATE_ISLOGIN,
 	UPDATE_BALANCE,
+	RESET_BALANCE
 } from '../actions/UserProfileReducer';
 
 const inititalState = {
@@ -54,6 +55,12 @@ const UserProfileReducer = (state = inititalState, action) => {
 		return {
 			...state,
 			balance: parseInt(state.balance)+parseInt(action.data),
+		};
+	}
+	case RESET_BALANCE: {
+		return {
+			...state,
+			balance: 0,
 		};
 	}
 	default:

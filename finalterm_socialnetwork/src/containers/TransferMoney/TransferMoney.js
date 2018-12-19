@@ -16,15 +16,19 @@ import { test } from '../../lib/test';
 
 class TransferMoneyContainer extends React.Component {
 	submitTransfer = () => {
-		this.props.submitTransfer(
-			this.props.amount,
-			this.props.publicKey,
-			this.props.privateKey,
-			this.props.address
-		);
-		this.props.history.push({
-			pathname: '/dashboard',
-		});
+		if(this.props.amount !== 0){
+			this.props.submitTransfer(
+				this.props.amount,
+				this.props.publicKey,
+				this.props.privateKey,
+				this.props.address
+			);
+			this.props.history.push({
+				pathname: '/dashboard',
+			});
+		}else{
+			alert('Amount could not be 0');
+		}
 	};
 
 	render() {

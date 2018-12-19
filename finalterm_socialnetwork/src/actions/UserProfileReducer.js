@@ -4,6 +4,7 @@ export const UPDATE_PUBLICKEY = 'UPDATE_PUBLICKEY';
 export const UPDATE_PRIVATEKEY = 'UPDATE_PRIVATEKEY';
 export const UPDATE_ISLOGIN = 'UPDATE_ISLOGIN';
 export const UPDATE_BALANCE = 'UPDATE_BALANCE';
+export const RESET_BALANCE = 'RESET_BALANCE';
 
 export const isEditing = () => ({
 	type: EDITING,
@@ -31,4 +32,8 @@ export const update_isLogin = () => ({
 export const update_Balance = data => ({
 	type: UPDATE_BALANCE,
 	data: data,
+});
+
+export const reset_Balance = () => ({
+	type: RESET_BALANCE,
 });
