@@ -5,7 +5,8 @@ import {
 	UPDATE_PUBLICKEY,
 	UPDATE_ISLOGIN,
 	UPDATE_BALANCE,
-	RESET_BALANCE
+	RESET_BALANCE,
+	UPDATE_BANDWIDTH
 } from '../actions/UserProfileReducer';
 
 const inititalState = {
@@ -16,6 +17,7 @@ const inititalState = {
 	dateOfBirth: 'Feb 14 1997',
 	balance: 0,
 	isEditing: false,
+	bandwidth: 0,
 };
 
 const UserProfileReducer = (state = inititalState, action) => {
@@ -55,6 +57,12 @@ const UserProfileReducer = (state = inititalState, action) => {
 		return {
 			...state,
 			balance: parseInt(state.balance)+parseInt(action.data),
+		};
+	}
+	case UPDATE_BANDWIDTH: {
+		return {
+			...state,
+			bandwidth: action.data,
 		};
 	}
 	case RESET_BALANCE: {

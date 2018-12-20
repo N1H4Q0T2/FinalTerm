@@ -241,26 +241,20 @@ const calculateBandwidth = async account => {
 			'base64'
 		);
 		const data = v1.decode(base64Data);
-		const txTime = await getTxTime(transactions.data.result.txs[i].height);
-		var txBandwidth = bandwidth(
-			transactions.data.result.txs[i].tx,
-			txTime,
-			bandwidthTime,
-			myBandwidth
-		);
-		x1 = txTime;
-		myBandwidth = txBandwidth.bandwith;
+		console.log(data);
+		if(data.account === account){
+			const txTime = await getTxTime(transactions.data.result.txs[i].height);
+			var txBandwidth = bandwidth(
+				transactions.data.result.txs[i].tx,
+				txTime,
+				bandwidthTime,
+				myBandwidth
+			);
+			x1 = txTime;
+			myBandwidth = txBandwidth.bandwith;
+		}
 	}
 	return bandwidthLimit - myBandwidth;
 };
 
-const test = async () => {
-	//readAllTransactionsOfOneACcount(key.publicKey1);
-	// calculateAccountBalance(key.publicKey1);
-	//postContent(key.publicKey1, key.privateKey1);
-	//postContent(key.publicKey1, key.privateKey1);
-	// const x = await calculateBandwidth(key.publicKey1);
-	// console.log(`My energy for last transaction: ${x}`);
-};
-
-export { test };
+export { calculateBandwidth };

@@ -33,7 +33,6 @@ const PostList = ({ data }) => {
 };
 
 const Wall = props => {
-	console.log(props.accountPosts);
 	let postList = [];
 	for (let i = 0; i < props.accountPosts.length; i++) {
 		const item = <PostList data={props.accountPosts[i]} />;

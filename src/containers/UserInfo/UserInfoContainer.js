@@ -8,11 +8,14 @@ import {
 	isEditing,
 	updateProfile,
 	update_Balance,
+	update_Bandwidth
 } from '../../actions/UserProfileReducer';
+import {calculateBandwidth} from '../../lib/function';
 
 class UserInfoContainer extends React.Component {
 	componentDidMount() {
 		this.props.onLoadBalance(this.props.data.publicKey);
+		this.props.onLoadBandwidth(this.props.data.publicKey);
 	}
 
 	constructor(props) {
@@ -114,6 +117,10 @@ const mapDispatchToProps = dispatch => {
 		update_Balance: data => {
 			dispatch(update_Balance(data));
 		},
+		onLoadBandwidth: async account => {
+			const bandwidth = await calculateBandwidth(account);
+			dispatch(update_Bandwidth(bandwidth));
+		}
 	};
 };
 
