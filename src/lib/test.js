@@ -191,7 +191,7 @@ const postContent = async (account, privateKey) => {
 };
 
 const test = () => {
-	// readAllTransactionsOfOneACcount(key.publicKey1);
+	//readAllTransactionsOfOneACcount(key.publicKey1);
 	// calculateAccountBalance(key.publicKey1);
 	//postContent(key.publicKey1, key.privateKey1);
 	//postContent(key.publicKey1, key.privateKey1);

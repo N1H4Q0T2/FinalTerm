@@ -53,7 +53,7 @@ const mapDispatchToProps = dispatch => {
 					return item.account === account;
 				});
 				const sequence = accountTrans.length + 1;
-				const content = 'Nguyen Ho Quoc Thinh vừa post bài';
+				const content = data;
 				let post_content = v1.PlainTextContent.encode({
 					type: 1,
 					text: content,

@@ -1,13 +1,15 @@
+import WallReducer from './WallReducer';
+import PostReducer from './PostReducer';
 import TestReducer from './TestReducer';
-import UserProfileReducer from './UserProfileReducer';
 import RouteReducer from './RouteReducer';
 import TransferReducer from './TransferReducer';
-import PostReducer from './PostReducer';
+import UserProfileReducer from './UserProfileReducer';
 
 export {
+	WallReducer,
 	TestReducer,
-	UserProfileReducer,
+	PostReducer,
 	RouteReducer,
 	TransferReducer,
-	PostReducer,
+	UserProfileReducer,
 };

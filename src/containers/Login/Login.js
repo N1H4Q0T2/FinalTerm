@@ -39,7 +39,6 @@ class LoginContainer extends React.Component {
 }
 
 const mapStateToProps = state => {
-	console.log('Your balance: ' + state.UserProfileReducer.balance);
 	return {
 		publicKey: state.UserProfileReducer.publicKey,
 		privateKey: state.UserProfileReducer.privateKey,
@@ -61,7 +60,6 @@ const mapDispatchToProps = dispatch => {
 			axios.get(url).then(res => {
 				const total_count = res.data.result.total_count;
 				const total_page = Math.floor(total_count / per_page) + 1;
-				console.log('Totoal page: '+total_page);
 				for (var i = 0; i < total_page; i++) {
 					var url2 = `${
 						api.API_GET_ACCOUNT_TRANSACTIONS

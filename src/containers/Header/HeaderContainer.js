@@ -8,7 +8,6 @@ import { withRouter } from 'react-router-dom';
 class HeaderContainer extends React.Component {
 	componentDidMount() {
 		var currentRoute = localStorage.getItem('currentRoute');
-		console.log(currentRoute);
 		if (currentRoute !== null) {
 			this.props.updateRoute(currentRoute);
 		} 	
