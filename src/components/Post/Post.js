@@ -8,6 +8,7 @@ const Post = props => {
 			<div className="TransferMoney_window">
 				<p className="TransferMoney_title">POST</p>
 				<textarea
+					value={props.content}
 					className="Post_inputArea"
 					onChange={e => props.update_Content(e.target.value)}
 				/>

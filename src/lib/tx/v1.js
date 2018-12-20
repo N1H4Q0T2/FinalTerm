@@ -44,6 +44,11 @@ const InteractParams = vstruct([
 	// React if '', like, love, haha, anrgy, sad, wow
 ]);
 
+const PlainTextContent = vstruct([
+	{ name: 'type', type: vstruct.UInt8 },
+	{ name: 'text', type: vstruct.VarString(vstruct.UInt16BE) },
+]);
+
 function encode(tx) {
 	let params, operation;
 	if (tx.version !== 1) {
@@ -150,4 +155,4 @@ function decode(data) {
 	};
 }
 
-export { encode, decode };
+export { encode, decode, PlainTextContent };
