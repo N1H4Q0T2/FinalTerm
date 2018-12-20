@@ -14,8 +14,11 @@ import * as api from '../../config/api';
 import * as v1 from '../../lib/tx/v1';
 
 class LoginContainer extends React.Component {
+	componentDidMount(){
+		localStorage.setItem('currentRoute', '/');
+	}
+
 	onLogin = () => {
-		this.props.onLogin(this.props.publicKey, this.props.balance);
 		this.props.history.push({
 			pathname: '/dashboard',
 		});
@@ -52,7 +55,7 @@ const mapDispatchToProps = dispatch => {
 		update_PrivateKey: data => {
 			return dispatch(update_PrivateKey(data));
 		},
-		onLogin: async (publicKey, YourBalance) => {
+		onLogin: async (publicKey) => {
 			var url = `${api.API_GET_ACCOUNT_TRANSACTIONS}${publicKey}%27%22`;
 			const per_page = 50;
 			axios.get(url).then(res => {
