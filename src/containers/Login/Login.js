@@ -10,8 +10,6 @@ import {
 	update_Balance,
 } from '../../actions/UserProfileReducer';
 import { updateRoute } from '../../actions/RouteReducerActions';
-import * as api from '../../config/api';
-import * as v1 from '../../lib/tx/v1';
 
 class LoginContainer extends React.Component {
 	componentDidMount(){

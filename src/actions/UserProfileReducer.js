@@ -1,5 +1,5 @@
 export const EDITING = 'EDITING';
-export const UPDATE_PROFILE = 'UPDATE_PROFILE';
+export const UPDATE_USERNAME = 'UPDATE_USERNAME';
 export const UPDATE_PUBLICKEY = 'UPDATE_PUBLICKEY';
 export const UPDATE_PRIVATEKEY = 'UPDATE_PRIVATEKEY';
 export const UPDATE_ISLOGIN = 'UPDATE_ISLOGIN';
@@ -11,8 +11,8 @@ export const isEditing = () => ({
 	type: EDITING,
 });
 
-export const updateProfile = data => ({
-	type: UPDATE_PROFILE,
+export const updateUsername = data => ({
+	type: UPDATE_USERNAME,
 	data: data,
 });
 

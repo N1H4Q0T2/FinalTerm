@@ -3,51 +3,48 @@ import { connect } from 'react-redux';
 import { UserInfo } from '../../components';
 import {
 	isEditing,
-	updateProfile,
+	updateUsername,
 	update_Balance,
 	update_Bandwidth,
 } from '../../actions/UserProfileReducer';
 import {
 	calculateBandwidth,
 	calculateAccountBalance,
+	getAccountUsername,
+	updateAccountProfile,
 } from '../../lib/function';
 
 class UserInfoContainer extends React.Component {
-	componentDidMount() {
-		this.props.onLoadBalance(this.props.data.publicKey);
-		this.props.onLoadBandwidth(this.props.data.publicKey);
-	}
-
 	constructor(props) {
 		super(props);
 		this.state = {
 			editUsername: '',
-			editDateOfBirth: '',
 		};
 	}
+
+	componentDidMount = async () => {
+		this.props.onGetAccountUsername(this.props.data.publicKey);
+		this.props.onLoadBalance(this.props.data.publicKey);
+		this.props.onLoadBandwidth(this.props.data.publicKey);
+	};
 
 	updateEditUsername = data => {
 		this.setState({ editUsername: data });
 	};
 
-	updateEditDateOfBirth = data => {
-		this.setState({ editDateOfBirth: data });
-	};
-
-	saveProfile = () => {
-		const userName =
-			this.state.editUsername === ''
-				? this.props.data.userName
-				: this.state.editUsername;
-		const dateOfBirth =
-			this.state.editDateOfBirth === ''
-				? this.props.data.dateOfBirth
-				: this.state.editDateOfBirth;
-		const data = {
-			userName: userName,
-			dateOfBirth: dateOfBirth,
-		};
-		this.props.updateProfile(data);
+	saveProfile = async () => {
+		if (this.state.editUsername !== '') {
+			const result = await this.props.updateUsername(
+				this.props.data.publicKey,
+				this.props.data.privateKey,
+				this.state.editUsername
+			);
+			if(result === true){
+				alert('Update profile successful');
+			}else{
+				alert('Update profile fail');
+			}
+		}
 	};
 
 	render() {
@@ -59,7 +56,6 @@ class UserInfoContainer extends React.Component {
 					following={this.props.following}
 					onEditProfileClick={this.props.onEditProfileClick}
 					updateEditUsername={this.updateEditUsername}
-					updateEditDateOfBirth={this.updateEditDateOfBirth}
 					saveProfile={this.saveProfile}
 				/>
 			</div>
@@ -78,9 +74,14 @@ const mapDispatchToProps = dispatch => {
 		onEditProfileClick: () => {
 			dispatch(isEditing());
 		},
-		updateProfile: data => {
+		updateUsername: async (account, privateKey, data) => {
 			dispatch(isEditing());
-			dispatch(updateProfile(data));
+			const result = await updateAccountProfile(account, privateKey, data);
+			if (result === true) {
+				const username = await getAccountUsername(account);
+				dispatch(updateUsername(username));
+			}
+			return result;
 		},
 		onLoadBalance: async account => {
 			const balance = await calculateAccountBalance(account);
@@ -92,6 +93,10 @@ const mapDispatchToProps = dispatch => {
 		onLoadBandwidth: async account => {
 			const bandwidth = await calculateBandwidth(account);
 			dispatch(update_Bandwidth(bandwidth));
+		},
+		onGetAccountUsername: async account => {
+			const username = await getAccountUsername(account);
+			dispatch(updateUsername(username));
 		},
 	};
 };

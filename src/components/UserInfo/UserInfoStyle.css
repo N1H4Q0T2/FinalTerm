@@ -33,7 +33,7 @@
   margin-top: 20px;
   letter-spacing: 1.5px;
   font-size: 20px;
-  text-transform: uppercase;
+  align-self: center;
 }
 
 .UserInfo_Field {
@@ -64,17 +64,6 @@
   border-style: groove;
   background-color: #E6ECF0;
   font-size: 20px;
-  font-weight: bold;
-  text-transform: uppercase;
-  padding: 2px;
-}
-
-.UserInfo_EditDateOfBirth{
-  margin-top: 5px;
-  margin-left: 10px;
-  border-radius: 3px;
-  border-style: groove;
-  background-color: #E6ECF0;
   font-weight: bold;
   padding: 2px;
 }

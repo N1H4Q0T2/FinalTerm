@@ -16,14 +16,6 @@ const UserInfo = props => (
 					onChange={e => props.updateEditUsername(e.target.value)}
 				/>
 				<div className="userInfo_Div2">
-					<span className="UserInfo_Field">Date of birth: </span>
-					<input
-						className="UserInfo_EditDateOfBirth"
-						placeholder={props.data.dateOfBirth}
-						onChange={e => props.updateEditDateOfBirth(e.target.value)}
-					/>
-				</div>
-				<div className="userInfo_Div2">
 					<span className="UserInfo_Field">Balance: </span>
 					<span className="UserInfo_Content UserInfo_FollowerNFollowing">
 						{props.data.balance} CEL
@@ -62,10 +54,6 @@ const UserInfo = props => (
 		) : (
 			<div className="UserInfo_Div1">
 				<span className="UserInfo_Name">{props.data.userName}</span>
-				<div className="userInfo_Div2">
-					<span className="UserInfo_Field">Date of birth: </span>
-					<span className="UserInfo_Content">{props.data.dateOfBirth}</span>
-				</div>
 				<div className="userInfo_Div2">
 					<span className="UserInfo_Field">Balance: </span>
 					<span className="UserInfo_Content UserInfo_FollowerNFollowing">

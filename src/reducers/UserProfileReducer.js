@@ -1,6 +1,6 @@
 import {
 	EDITING,
-	UPDATE_PROFILE,
+	UPDATE_USERNAME,
 	UPDATE_PRIVATEKEY,
 	UPDATE_PUBLICKEY,
 	UPDATE_ISLOGIN,
@@ -13,8 +13,7 @@ const inititalState = {
 	isLogin: false,
 	publicKey: 'GDJXKJMBXBSRCPN6LOYYASV7U5WIG5ZHOUW7D3X5I6AVEUHFVANTLH5K',
 	privateKey: 'SDKGX6GW3YCUS34RPT3OM5UAJKHG4YINWFNO2LRGWGO5WR3LLRZSP63A',
-	userName: 'NGUYEN HO QUOC THINH',
-	dateOfBirth: 'Feb 14 1997',
+	userName: '',
 	balance: 0,
 	isEditing: false,
 	bandwidth: 0,
@@ -28,11 +27,10 @@ const UserProfileReducer = (state = inititalState, action) => {
 			isEditing: !state.isEditing,
 		};
 	}
-	case UPDATE_PROFILE: {
+	case UPDATE_USERNAME: {
 		return {
 			...state,
-			userName: action.data.userName,
-			dateOfBirth: action.data.dateOfBirth,
+			userName: action.data,
 		};
 	}
 	case UPDATE_PUBLICKEY: {

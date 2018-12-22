@@ -315,7 +315,13 @@ const updateAccountProfile = async (account, privateKey, data) => {
 	transaction.sign(tx, privateKey);
 	const txEncode = '0x' + transaction.encode(tx).toString('hex');
 	const result = await commitTxToBroadcast(txEncode);
-	console.log(result);
+	return result;
 };
 
-export { calculateBandwidth, calculateAccountBalance, transferMoney };
+export {
+	calculateBandwidth,
+	calculateAccountBalance,
+	transferMoney,
+	getAccountUsername,
+	updateAccountProfile
+};
