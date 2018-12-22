@@ -56,7 +56,7 @@ const UserProfileReducer = (state = inititalState, action) => {
 	case UPDATE_BALANCE: {
 		return {
 			...state,
-			balance: parseInt(state.balance)+parseInt(action.data),
+			balance: action.data,
 		};
 	}
 	case UPDATE_BANDWIDTH: {
