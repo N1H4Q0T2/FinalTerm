@@ -38,7 +38,7 @@ const getAllTransactions = async account => {
 		method: 'GET',
 	});
 	const total_count = response.data.result.total_count;
-	const total_page = Math.floor(total_count / per_page) + 1;
+	const total_page = Math.ceil(total_count / per_page);
 	var allTransaction = [];
 	for (let i = 0; i < total_page; i++) {
 		var data = await getTransaction(account, per_page, i + 1);
@@ -213,7 +213,7 @@ const checkIfEnoughBandwidth = (
 	bandwidth,
 	bandwidthTime,
 	bandwidthLimit,
-	currentTxTime,
+	currentTxTime
 ) => {
 	const base64Data = Buffer.from(tx, 'base64');
 	const txSize = base64Data.length;
@@ -262,7 +262,7 @@ const transferMoney = async (
 		bandwidth,
 		bandwidthTime,
 		bandwidthLimit,
-		new Date(),
+		new Date()
 	);
 	if (isEnoughBandwidth) {
 		const txEncode = '0x' + transaction.encode(tx).toString('hex');
@@ -273,47 +273,45 @@ const transferMoney = async (
 	}
 };
 
-const postContent = async (account, privateKey) => {
-	var url = api.API_GET_ACCOUNT_TRANSACTIONS + account + '%27%22';
-	const accountTransactions = await axios({
-		url,
-		method: 'GET',
+const postContent = async (
+	account,
+	privateKey,
+	data,
+	bandwidth,
+	bandwidthTime,
+	bandwidthLimit
+) => {
+	const allTransaction = await getAllTransactions(account);
+	const sequence = await getSequence(allTransaction, account);
+	const content = PlainTextContent.encode({
+		type: 1,
+		text: data,
 	});
-	if (accountTransactions.status === 200) {
-		const allTransaction = accountTransactions.data.result.txs.map(item => {
-			const data = Buffer.from(item.tx, 'base64');
-			const transaction = v1.decode(data);
-			return transaction;
-		});
-		const accountTrans = allTransaction.filter(item => {
-			return item.account === account;
-		});
-		const sequence = accountTrans.length + 1;
-		const content = 'Nguyen Ho Quoc Thinh vừa post bài';
-		let post_content = PlainTextContent.encode({
-			type: 1,
-			text: content,
-		});
-		const tx = {
-			version: 1,
-			operation: 'post',
-			account: account,
-			params: {
-				content: post_content,
-				keys: [],
-			},
-			sequence: sequence,
-			memo: Buffer.alloc(0),
-		};
-		transaction.sign(tx, privateKey);
-		console.log(tx);
+	const tx = {
+		version: 1,
+		operation: 'post',
+		account: account,
+		params: {
+			content: content,
+			keys: [],
+		},
+		sequence: sequence,
+		memo: Buffer.alloc(0),
+	};
+	transaction.sign(tx, privateKey);
+	const isEnoughBandwidth = checkIfEnoughBandwidth(
+		transaction.encode(tx),
+		bandwidth,
+		bandwidthTime,
+		bandwidthLimit,
+		new Date()
+	);
+	if (isEnoughBandwidth) {
 		const txEncode = '0x' + transaction.encode(tx).toString('hex');
-		url = `${api.API_COMMIT_TRANSACTION}${txEncode}`;
-		const res = await axios({
-			url,
-			method: 'POST',
-		});
-		console.log(res);
+		const result = await commitTxToBroadcast(txEncode);
+		return result;
+	} else {
+		return false;
 	}
 };
 
@@ -375,7 +373,7 @@ const updateAccountProfile = async (
 		bandwidth,
 		bandwidthTime,
 		bandwidthLimit,
-		new Date(),
+		new Date()
 	);
 	if (isEnoughBandwidth) {
 		const txEncode = '0x' + transaction.encode(tx).toString('hex');
@@ -386,10 +384,31 @@ const updateAccountProfile = async (
 	}
 };
 
+const getAccountPosts = async account => {
+	const allTransaction = await getAllTransactions(account);
+	var result = [];
+	allTransaction.map(item => {
+		const data = Buffer.from(item.tx, 'base64');
+		const decodeData = v1.decode(data);
+		if (decodeData.operation === 'post') {
+			try {
+				const content_base64 = Buffer.from(decodeData.params.content, 'base64');
+				const real_data = v1.PlainTextContent.decode(content_base64);
+				result.push(real_data);
+			} catch (e) {
+				console.log();
+			}
+		}
+	});
+	return result;
+};
+
 export {
 	calculateBandwidth,
 	calculateAccountBalance,
 	transferMoney,
 	getAccountUsername,
 	updateAccountProfile,
+	getAccountPosts,
+	postContent,
 };

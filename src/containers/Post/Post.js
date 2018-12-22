@@ -4,13 +4,29 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import Post from '../../components/Post/Post';
 import { update_Content } from '../../actions/PostReducerActions';
-import * as v1 from '../../lib/tx/v1';
-import * as api from '../../config/api';
-import * as transaction from '../../lib/tx';
+import { postContent } from '../../lib/function';
 
 class PostContainer extends React.Component {
-	onPost = () => {
-		this.props.onPost(this.props.content, this.props.publicKey, this.props.privateKey);
+	onPost = async () => {
+		if (this.props.content !== '') {
+			const result = await this.props.onPost(
+				this.props.data.publicKey,
+				this.props.data.privateKey,
+				this.props.content,
+				this.props.data.bandwidth,
+				this.props.data.bandwidthTime,
+				this.props.data.bandwidthLimit
+			);
+			if (result === true) {
+				alert('Post successful');
+				alert('Transfer successful');
+				this.props.history.push({
+					pathname: '/dashboard',
+				});
+			} else {
+				alert('Post fail');
+			}
+		}
 	};
 
 	render() {
@@ -26,6 +42,7 @@ class PostContainer extends React.Component {
 
 const mapStateToProps = state => {
 	return {
+		data: state.UserProfileReducer,
 		publicKey: state.UserProfileReducer.publicKey,
 		privateKey: state.UserProfileReducer.privateKey,
 		content: state.PostReducer.content,
@@ -37,48 +54,26 @@ const mapDispatchToProps = dispatch => {
 		update_Content: data => {
 			return dispatch(update_Content(data));
 		},
-		onPost: async (data, account, privateKey) => {
-			var url = api.API_GET_ACCOUNT_TRANSACTIONS + account + '%27%22';
-			const accountTransactions = await axios({
-				url,
-				method: 'GET',
-			});
-			if (accountTransactions.status === 200) {
-				const allTransaction = accountTransactions.data.result.txs.map(item => {
-					const data = Buffer.from(item.tx, 'base64');
-					const transaction = v1.decode(data);
-					return transaction;
-				});
-				const accountTrans = allTransaction.filter(item => {
-					return item.account === account;
-				});
-				const sequence = accountTrans.length + 1;
-				const content = data;
-				let post_content = v1.PlainTextContent.encode({
-					type: 1,
-					text: content,
-				});
-				const tx = {
-					version: 1,
-					operation: 'post',
-					account: account,
-					params: {
-						content: post_content,
-						keys: [],
-					},
-					sequence: sequence,
-					memo: Buffer.alloc(0),
-				};
-				transaction.sign(tx, privateKey);
-				const txEncode = '0x' + transaction.encode(tx).toString('hex');
-				url = `${api.API_COMMIT_TRANSACTION}${txEncode}`;
-				const res = await axios({
-					url,
-					method: 'POST',
-				});
+		onPost: async (
+			account,
+			privateKey,
+			data,
+			bandwidth,
+			bandwidthTime,
+			bandwidthLimit
+		) => {
+			const result = await postContent(
+				account,
+				privateKey,
+				data,
+				bandwidth,
+				bandwidthTime,
+				bandwidthLimit
+			);
+			if (result === true) {
+				dispatch(update_Content(''));
 			}
-			dispatch(update_Content(''));
-			alert('Post success');
+			return result;
 		},
 	};
 };

@@ -163,7 +163,6 @@ const getAccountUsername = async account => {
 
 const readAllTransactionsOfOneACcount = async account => {
 	const allTransaction = await getAllTransactions(account);
-	const sequence = getSequence(allTransaction, account);
 	allTransaction.map(item => {
 		const data = Buffer.from(item.tx, 'base64');
 		const decodeData = v1.decode(data);
@@ -226,48 +225,28 @@ const transferMoney = async (account, privateKey, address, amount) => {
 	return result;
 };
 
-const postContent = async (account, privateKey) => {
-	var url = api.API_GET_ACCOUNT_TRANSACTIONS + account + '%27%22';
-	const accountTransactions = await axios({
-		url,
-		method: 'GET',
+const postContent = async (account, privateKey, data) => {
+	const allTransaction = await getAllTransactions(account);
+	const sequence = await getSequence(allTransaction, account);
+	const content = PlainTextContent.encode({
+		type: 1,
+		text: data,
 	});
-	if (accountTransactions.status === 200) {
-		const allTransaction = accountTransactions.data.result.txs.map(item => {
-			const data = Buffer.from(item.tx, 'base64');
-			const transaction = v1.decode(data);
-			return transaction;
-		});
-		const accountTrans = allTransaction.filter(item => {
-			return item.account === account;
-		});
-		const sequence = accountTrans.length + 1;
-		const content = 'Nguyen Ho Quoc Thinh vừa post bài';
-		let post_content = PlainTextContent.encode({
-			type: 1,
-			text: content,
-		});
-		const tx = {
-			version: 1,
-			operation: 'post',
-			account: account,
-			params: {
-				content: post_content,
-				keys: [],
-			},
-			sequence: sequence,
-			memo: Buffer.alloc(0),
-		};
-		transaction.sign(tx, privateKey);
-		console.log(tx);
-		const txEncode = '0x' + transaction.encode(tx).toString('hex');
-		url = `${api.API_COMMIT_TRANSACTION}${txEncode}`;
-		const res = await axios({
-			url,
-			method: 'POST',
-		});
-		console.log(res);
-	}
+	const tx = {
+		version: 1,
+		operation: 'post',
+		account: account,
+		params: {
+			content: content,
+			keys: [],
+		},
+		sequence: sequence,
+		memo: Buffer.alloc(0),
+	};
+	transaction.sign(tx, privateKey);
+	const txEncode = '0x' + transaction.encode(tx).toString('hex');
+	const result = await commitTxToBroadcast(txEncode);
+	return result;
 };
 
 const calculateBandwidth = async account => {
@@ -316,8 +295,28 @@ const updateAccountProfile = async (account, privateKey, data) => {
 	console.log(result);
 };
 
+const getAccountPosts = async account => {
+	const allTransaction = await getAllTransactions(account);
+	var result = [];
+	allTransaction.map(item => {
+		const data = Buffer.from(item.tx, 'base64');
+		const decodeData = v1.decode(data);
+		if (decodeData.operation === 'post') {
+			try {
+				const content_base64 = Buffer.from(decodeData.params.content, 'base64');
+				const real_data = v1.PlainTextContent.decode(content_base64);
+				result.push(real_data);
+			} catch (e) {
+				console.log();
+			}
+		}
+	});
+	return result;
+};
+
 const test = async () => {
-	// transferMoney(key.publicKey1, key.privateKey1, key.publicKey2, 100);
+	// const result = await postContent(key.publicKey1, key.privateKey1, 'Test content');
+	// console.log(result);
 };
 
 export { test };
