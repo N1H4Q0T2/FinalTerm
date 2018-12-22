@@ -70,7 +70,6 @@ const mapDispatchToProps = dispatch => {
 							const transaction = v1.decode(data);
 							return transaction;
 						});
-						console.log(transactions);
 						const result = transactions.filter(item => {
 							return item.operation === 'payment';
 						});

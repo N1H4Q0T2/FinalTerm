@@ -100,7 +100,6 @@ const mapDispatchToProps = dispatch => {
 					method: 'POST',
 				});
 				alert('Transfer money success');
-				console.log(res);
 			}
 			return dispatch(submitTransfer());
 		},

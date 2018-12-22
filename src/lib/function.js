@@ -223,7 +223,7 @@ const bandwidth = (tx, time, bandwidthTime, bandwidth) => {
 };
 
 const calculateBandwidth = async account => {
-	var url = api.API_GET_ACCOUNT_TRANSACTIONS + account + '%27%22';
+	var url = api.API_GET_ACCOUNT_TRANSACTIONS + account + '%27%22&per_page=50';
 	const accountBalance = await calculateAccountBalance(account);
 	const transactions = await axios({
 		url,
@@ -241,8 +241,8 @@ const calculateBandwidth = async account => {
 			'base64'
 		);
 		const data = v1.decode(base64Data);
-		console.log(data);
-		if(data.account === account){
+		console.log(i);
+		if (data.account === account) {
 			const txTime = await getTxTime(transactions.data.result.txs[i].height);
 			var txBandwidth = bandwidth(
 				transactions.data.result.txs[i].tx,
