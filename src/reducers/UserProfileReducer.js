@@ -17,6 +17,8 @@ const inititalState = {
 	balance: 0,
 	isEditing: false,
 	bandwidth: 0,
+	bandwidthTime: '',
+	bandwidthLimit: 0,
 };
 
 const UserProfileReducer = (state = inititalState, action) => {
@@ -60,7 +62,9 @@ const UserProfileReducer = (state = inititalState, action) => {
 	case UPDATE_BANDWIDTH: {
 		return {
 			...state,
-			bandwidth: action.data,
+			bandwidth: action.data.bandwidth,
+			bandwidthTime: action.data.bandwidthTime,
+			bandwidthLimit: action.data.bandwidthLimit,
 		};
 	}
 	case RESET_BALANCE: {

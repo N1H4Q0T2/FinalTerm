@@ -208,7 +208,41 @@ const calculateAccountBalance = async (account, inputData) => {
 	return balance;
 };
 
-const transferMoney = async (account, privateKey, address, amount) => {
+const checkIfEnoughBandwidth = (
+	tx,
+	bandwidth,
+	bandwidthTime,
+	bandwidthLimit,
+	currentTxTime,
+) => {
+	const base64Data = Buffer.from(tx, 'base64');
+	const txSize = base64Data.length;
+	const currentTime = currentTxTime;
+	let diff = BANDWIDTH_PERIOD;
+	if (
+		moment(currentTime).unix() - moment(bandwidthTime).unix() <
+		BANDWIDTH_PERIOD
+	) {
+		diff = moment(currentTime).unix() - moment(bandwidthTime).unix();
+	}
+	const bandwidthConsume = Math.ceil(
+		Math.max(0, (BANDWIDTH_PERIOD - diff) / BANDWIDTH_PERIOD) * bandwidth +
+			txSize
+	);
+	if (bandwidthLimit < bandwidthConsume) return false;
+	if (bandwidthLimit - bandwidthConsume <= 0) return false;
+	return true;
+};
+
+const transferMoney = async (
+	account,
+	privateKey,
+	address,
+	amount,
+	bandwidth,
+	bandwidthTime,
+	bandwidthLimit
+) => {
 	const allTransaction = await getAllTransactions(account);
 	const sequence = getSequence(allTransaction, account);
 	const tx = {
@@ -223,9 +257,20 @@ const transferMoney = async (account, privateKey, address, amount) => {
 		memo: Buffer.alloc(0),
 	};
 	transaction.sign(tx, privateKey);
-	const txEncode = '0x' + transaction.encode(tx).toString('hex');
-	const result = await commitTxToBroadcast(txEncode);
-	return result;
+	const isEnoughBandwidth = checkIfEnoughBandwidth(
+		transaction.encode(tx),
+		bandwidth,
+		bandwidthTime,
+		bandwidthLimit,
+		new Date(),
+	);
+	if (isEnoughBandwidth) {
+		const txEncode = '0x' + transaction.encode(tx).toString('hex');
+		const result = await commitTxToBroadcast(txEncode);
+		return result;
+	} else {
+		return false;
+	}
 };
 
 const postContent = async (account, privateKey) => {
@@ -293,10 +338,22 @@ const calculateBandwidth = async account => {
 		preTxTime = txTime;
 		accountBandwidth = txBandwidth.bandwith;
 	}
-	return bandwidthLimit - accountBandwidth;
+	const data = {
+		bandwidth: bandwidthLimit - accountBandwidth,
+		bandwidthTime: preTxTime,
+		bandwidthLimit: bandwidthLimit,
+	};
+	return data;
 };
 
-const updateAccountProfile = async (account, privateKey, data) => {
+const updateAccountProfile = async (
+	account,
+	privateKey,
+	data,
+	bandwidth,
+	bandwidthTime,
+	bandwidthLimit
+) => {
 	const allTransaction = await getAllTransactions(account);
 	const sequence = getSequence(allTransaction, account);
 	const tx = {
@@ -313,9 +370,20 @@ const updateAccountProfile = async (account, privateKey, data) => {
 	let updateData = Buffer.from(data, 'utf8');
 	tx.params.value = updateData;
 	transaction.sign(tx, privateKey);
-	const txEncode = '0x' + transaction.encode(tx).toString('hex');
-	const result = await commitTxToBroadcast(txEncode);
-	return result;
+	const isEnoughBandwidth = checkIfEnoughBandwidth(
+		transaction.encode(tx),
+		bandwidth,
+		bandwidthTime,
+		bandwidthLimit,
+		new Date(),
+	);
+	if (isEnoughBandwidth) {
+		const txEncode = '0x' + transaction.encode(tx).toString('hex');
+		const result = await commitTxToBroadcast(txEncode);
+		return result;
+	} else {
+		return false;
+	}
 };
 
 export {
@@ -323,5 +391,5 @@ export {
 	calculateAccountBalance,
 	transferMoney,
 	getAccountUsername,
-	updateAccountProfile
+	updateAccountProfile,
 };

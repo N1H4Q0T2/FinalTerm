@@ -37,11 +37,14 @@ class UserInfoContainer extends React.Component {
 			const result = await this.props.updateUsername(
 				this.props.data.publicKey,
 				this.props.data.privateKey,
-				this.state.editUsername
+				this.state.editUsername,
+				this.props.data.bandwidth,
+				this.props.data.bandwidthTime,
+				this.props.data.bandwidthLimit
 			);
-			if(result === true){
+			if (result === true) {
 				alert('Update profile successful');
-			}else{
+			} else {
 				alert('Update profile fail');
 			}
 		}
@@ -74,9 +77,23 @@ const mapDispatchToProps = dispatch => {
 		onEditProfileClick: () => {
 			dispatch(isEditing());
 		},
-		updateUsername: async (account, privateKey, data) => {
+		updateUsername: async (
+			account,
+			privateKey,
+			data,
+			bandwidth,
+			bandwidthTime,
+			bandwidthLimit
+		) => {
 			dispatch(isEditing());
-			const result = await updateAccountProfile(account, privateKey, data);
+			const result = await updateAccountProfile(
+				account,
+				privateKey,
+				data,
+				bandwidth,
+				bandwidthTime,
+				bandwidthLimit
+			);
 			if (result === true) {
 				const username = await getAccountUsername(account);
 				dispatch(updateUsername(username));
@@ -91,8 +108,8 @@ const mapDispatchToProps = dispatch => {
 			dispatch(update_Balance(data));
 		},
 		onLoadBandwidth: async account => {
-			const bandwidth = await calculateBandwidth(account);
-			dispatch(update_Bandwidth(bandwidth));
+			const data = await calculateBandwidth(account);
+			dispatch(update_Bandwidth(data));
 		},
 		onGetAccountUsername: async account => {
 			const username = await getAccountUsername(account);

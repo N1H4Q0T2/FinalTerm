@@ -22,7 +22,7 @@ const UserInfo = props => (
 					</span>
 				</div>
 				<div className="userInfo_Div2">
-					<span className="UserInfo_Field">Oxygen for last transaction: </span>
+					<span className="UserInfo_Field">OXYGEN: </span>
 					<span className="UserInfo_Content UserInfo_FollowerNFollowing">
 						{props.data.bandwidth}
 					</span>

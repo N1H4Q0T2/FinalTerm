@@ -17,12 +17,15 @@ import { transferMoney } from '../../lib/function';
 
 class TransferMoneyContainer extends React.Component {
 	submitTransfer = async () => {
-		if (this.props.amount !== 0) {
+		if (this.props.amount !== 0 && this.props.bandwidth !== 0) {
 			const result = await this.props.submitTransfer(
 				this.props.amount,
 				this.props.publicKey,
 				this.props.privateKey,
-				this.props.address
+				this.props.address,
+				this.props.bandwidth,
+				this.props.bandwidthTime,
+				this.props.bandwidthLimit,
 			);
 			if (result === true) {
 				alert('Transfer successful');
@@ -55,6 +58,9 @@ const mapStateToProps = state => {
 		address: state.TransferReducer.address,
 		publicKey: state.UserProfileReducer.publicKey,
 		privateKey: state.UserProfileReducer.privateKey,
+		bandwidth: state.UserProfileReducer.bandwidth,
+		bandwidthLimit: state.UserProfileReducer.bandwidthLimit,
+		bandwidthTime: state.UserProfileReducer.bandwidthTime,
 		submitSuccess: state.TransferReducer.submitSuccess,
 	};
 };
@@ -71,8 +77,8 @@ const mapDispatchToProps = dispatch => {
 		updateSubmitSuccess: input => {
 			return dispatch(updateSubmitSuccess(input));
 		},
-		submitTransfer: async (amount, account, privateKey, address) => {
-			const result = await transferMoney(account, privateKey, address, amount);
+		submitTransfer: async (amount, account, privateKey, address, bandwidth, bandwidthTime, bandwidthLimit) => {
+			const result = await transferMoney(account, privateKey, address, amount, bandwidth, bandwidthTime, bandwidthLimit);
 			if (result === true) {
 				dispatch(submitTransfer());
 			}
