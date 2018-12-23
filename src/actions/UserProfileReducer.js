@@ -6,6 +6,7 @@ export const UPDATE_ISLOGIN = 'UPDATE_ISLOGIN';
 export const UPDATE_BALANCE = 'UPDATE_BALANCE';
 export const RESET_BALANCE = 'RESET_BALANCE';
 export const UPDATE_BANDWIDTH = 'UPDATE_BANDWIDTH';
+export const UPDATE_AVATAR = 'UPDATE_AVATAR';
 
 export const isEditing = () => ({
 	type: EDITING,
@@ -41,5 +42,10 @@ export const reset_Balance = () => ({
 
 export const update_Bandwidth = data => ({
 	type: UPDATE_BANDWIDTH,
+	data: data,
+});
+
+export const updateAvatar = data => ({
+	type: UPDATE_AVATAR,
 	data: data,
 });

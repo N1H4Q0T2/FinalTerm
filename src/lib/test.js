@@ -11,6 +11,7 @@ import {
 	NETWORK_BANDWIDTH,
 } from '../config/metric';
 const vstruct = require('varstruct');
+const fs = require('fs');
 
 const PlainTextContent = vstruct([
 	{ name: 'type', type: vstruct.UInt8 },
@@ -166,6 +167,7 @@ const readAllTransactionsOfOneACcount = async account => {
 	allTransaction.map(item => {
 		const data = Buffer.from(item.tx, 'base64');
 		const decodeData = v1.decode(data);
+		console.log(decodeData);
 		if (decodeData.operation === 'post') {
 			try {
 				const y = Buffer.from(decodeData.params.content, 'base64');
@@ -178,6 +180,14 @@ const readAllTransactionsOfOneACcount = async account => {
 			if (decodeData.params.key === 'name') {
 				try {
 					console.log(decodeData.params.value.toString());
+				} catch (e) {
+					console.log();
+				}
+			}
+			if (decodeData.params.key === 'picture') {
+				try {
+					const data = decodeData.params.value.toString('base64');
+					console.log(data.slice(0));
 				} catch (e) {
 					console.log();
 				}
@@ -314,9 +324,61 @@ const getAccountPosts = async account => {
 	return result;
 };
 
-const test = async () => {
-	// const result = await postContent(key.publicKey1, key.privateKey1, 'Test content');
-	// console.log(result);
+const updateAccountAvatar = async (account, privateKey, data) => {
+	const realData = data.slice(23);
+	console.log(Buffer.from(realData, 'base64'));
+	const x = new Buffer(Buffer.from(realData, 'base64'));
+	const allTransaction = await getAllTransactions(account);
+	const sequence = getSequence(allTransaction, account);
+	const tx = {
+		version: 1,
+		operation: 'update_account',
+		account: account,
+		params: {
+			key: 'picture',
+			value: x,
+		},
+		sequence: sequence,
+		memo: Buffer.alloc(0),
+	};
+	transaction.sign(tx, privateKey);
+	const txEncode = transaction.encode(tx).toString('base64');
+	console.log(txEncode);
+	const url = `${api.API_COMMIT_TRANSACTION}${txEncode}`;
+	return axios
+		.post('https://komodo.forest.network/', {
+			jsonrpc: '2.0',
+			id: 1,
+			method: 'broadcast_tx_commit',
+			params: [`${txEncode}`],
+		})
+		.then(res => {
+			return res.data;
+		});
+};
+
+const getAccountAvatar = async account => {
+	const allTransaction = await getAllTransactions(account);
+	var avatar = '';
+	allTransaction.map(item => {
+		const data = Buffer.from(item.tx, 'base64');
+		const decodeData = v1.decode(data);
+		if (decodeData.operation === 'update_account') {
+			if (decodeData.params.key === 'picture') {
+				try {
+					avatar = decodeData.params.value.toString('base64');
+				} catch (e) {
+					console.log();
+				}
+			}
+		}
+	});
+	return avatar;
+};
+
+const test = async data => {
+	getAccountAvatar(key.publicKey1);
+	
 };
 
 export { test };

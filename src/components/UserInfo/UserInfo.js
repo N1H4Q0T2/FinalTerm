@@ -6,8 +6,22 @@ const UserInfo = props => (
 		<img
 			alt="UserAvatar"
 			className="UserInfo_Image"
-			src="https://scontent.fsgn5-5.fna.fbcdn.net/v/t1.0-9/20116_809409945814637_7236562808378457208_n.jpg?_nc_cat=108&_nc_ht=scontent.fsgn5-5.fna&oh=600b19cb443ce0907e185cd5f248da2b&oe=5C690B13"
+			src={
+				props.editAvatar === ''
+					? `data:image/jpeg;base64,${props.data.avatar}`
+					: URL.createObjectURL(props.editAvatar)
+			}
 		/>
+		{props.data.isEditing && (
+			<input
+				type="file"
+				id="uploadImage"
+				style={{ marginTop: 10 }}
+				onChange={e => {
+					props.updateEditAvatar(e.target.files[0]);
+				}}
+			/>
+		)}
 		{props.data.isEditing ? (
 			<div className="UserInfo_Div1">
 				<input

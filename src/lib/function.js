@@ -403,12 +403,86 @@ const getAccountPosts = async account => {
 	return result;
 };
 
+const getAccountAvatar = async account => {
+	const allTransaction = await getAllTransactions(account);
+	var avatar = '';
+	allTransaction.map(item => {
+		const data = Buffer.from(item.tx, 'base64');
+		const decodeData = v1.decode(data);
+		if (decodeData.operation === 'update_account') {
+			if (decodeData.params.key === 'picture') {
+				try {
+					if (decodeData.params.value.toString('base64') !== '')
+						avatar = decodeData.params.value.toString('base64');
+				} catch (e) {
+					console.log();
+				}
+			}
+		}
+	});
+	return avatar;
+};
+
+const updateAccountAvatar = async (
+	account,
+	privateKey,
+	data,
+	bandwidth,
+	bandwidthTime,
+	bandwidthLimit
+) => {
+	const realData = data.slice(23);
+	const x = new Buffer(Buffer.from(realData, 'base64'));
+	const allTransaction = await getAllTransactions(account);
+	const sequence = getSequence(allTransaction, account);
+	const tx = {
+		version: 1,
+		operation: 'update_account',
+		account: account,
+		params: {
+			key: 'picture',
+			value: x,
+		},
+		sequence: sequence,
+		memo: Buffer.alloc(0),
+	};
+	transaction.sign(tx, privateKey);
+	const isEnoughBandwidth = checkIfEnoughBandwidth(
+		transaction.encode(tx),
+		bandwidth,
+		bandwidthTime,
+		bandwidthLimit,
+		new Date()
+	);
+	if (isEnoughBandwidth) {
+		const txEncode = transaction.encode(tx).toString('base64');
+		return axios
+			.post('https://komodo.forest.network/', {
+				jsonrpc: '2.0',
+				id: 1,
+				method: 'broadcast_tx_commit',
+				params: [`${txEncode}`],
+			})
+			.then(res => {
+				console.log(res.data);
+				return true;
+			})
+			.catch(e => {
+				return false;
+			});
+	} else {
+		return false;
+	}
+};
+
 export {
-	calculateBandwidth,
-	calculateAccountBalance,
-	transferMoney,
-	getAccountUsername,
-	updateAccountProfile,
-	getAccountPosts,
 	postContent,
+	transferMoney,
+	getAccountPosts,
+	getAccountAvatar,
+	calculateBandwidth,
+	getAccountUsername,
+	updateAccountAvatar,
+	updateAccountProfile,
+	calculateAccountBalance,
 };

@@ -3,15 +3,18 @@ import { connect } from 'react-redux';
 import { UserInfo } from '../../components';
 import {
 	isEditing,
+	updateAvatar,
 	updateUsername,
 	update_Balance,
 	update_Bandwidth,
 } from '../../actions/UserProfileReducer';
 import {
-	calculateBandwidth,
-	calculateAccountBalance,
+	getAccountAvatar,
 	getAccountUsername,
+	calculateBandwidth,
+	updateAccountAvatar,
 	updateAccountProfile,
+	calculateAccountBalance,
 } from '../../lib/function';
 
 class UserInfoContainer extends React.Component {
@@ -19,11 +22,14 @@ class UserInfoContainer extends React.Component {
 		super(props);
 		this.state = {
 			editUsername: '',
+			editAvatar: '',
+			avatarBase64: '',
 		};
 	}
 
 	componentDidMount = async () => {
-		this.props.onGetAccountUsername(this.props.data.publicKey);
+		this.props.getAccountAvatar(this.props.data.publicKey);
+		this.props.getAccountUsername(this.props.data.publicKey);
 		this.props.onLoadBalance(this.props.data.publicKey);
 		this.props.onLoadBandwidth(this.props.data.publicKey);
 	};
@@ -32,9 +38,21 @@ class UserInfoContainer extends React.Component {
 		this.setState({ editUsername: data });
 	};
 
+	updateEditAvatar = data => {
+		let reader = new FileReader();
+		reader.readAsDataURL(data);
+		var result;
+		reader.onload = e => {
+			this.setState({ avatarBase64: e.target.result });
+		};
+		this.setState({ editAvatar: data });
+	};
+
 	saveProfile = async () => {
+		var result_username = false,
+			result_avatar = false;
 		if (this.state.editUsername !== '') {
-			const result = await this.props.updateUsername(
+			result_username = await this.props.updateUsername(
 				this.props.data.publicKey,
 				this.props.data.privateKey,
 				this.state.editUsername,
@@ -42,12 +60,27 @@ class UserInfoContainer extends React.Component {
 				this.props.data.bandwidthTime,
 				this.props.data.bandwidthLimit
 			);
-			if (result === true) {
-				alert('Update profile successful');
-			} else {
-				alert('Update profile fail');
-			}
 		}
+		if (this.state.avatarBase64 !== '') {
+			result_avatar = await this.props.updateAccountAvatar(
+				this.props.data.publicKey,
+				this.props.data.privateKey,
+				this.state.avatarBase64,
+				this.props.data.bandwidth,
+				this.props.data.bandwidthTime,
+				this.props.data.bandwidthLimit
+			);
+		}
+		if (result_avatar && result_username) {
+			alert('Update successful');
+		} else if (result_avatar === false || result_username === false) {
+			alert('Update fail');
+		}
+	};
+
+	onEditProfileClick = () => {
+		this.setState({ editUsername: '', editAvatar: '' });
+		this.props.onEditProfileClick();
 	};
 
 	render() {
@@ -57,9 +90,11 @@ class UserInfoContainer extends React.Component {
 					data={this.props.data}
 					follower={this.props.follower}
 					following={this.props.following}
-					onEditProfileClick={this.props.onEditProfileClick}
+					onEditProfileClick={this.onEditProfileClick}
 					updateEditUsername={this.updateEditUsername}
+					updateEditAvatar={this.updateEditAvatar}
 					saveProfile={this.saveProfile}
+					editAvatar={this.state.editAvatar}
 				/>
 			</div>
 		);
@@ -100,6 +135,29 @@ const mapDispatchToProps = dispatch => {
 			}
 			return result;
 		},
+		updateAccountAvatar: async (
+			account,
+			privateKey,
+			data,
+			bandwidth,
+			bandwidthTime,
+			bandwidthLimit
+		) => {
+			const result = await updateAccountAvatar(
+				account,
+				privateKey,
+				data,
+				bandwidth,
+				bandwidthTime,
+				bandwidthLimit
+			);
+			console.log(result);
+			if (result === true) {
+				const avatar = await getAccountAvatar(account);
+				dispatch(updateAvatar(avatar));
+			}
+			return result;
+		},
 		onLoadBalance: async account => {
 			const balance = await calculateAccountBalance(account);
 			return dispatch(update_Balance(balance));
@@ -111,9 +169,13 @@ const mapDispatchToProps = dispatch => {
 			const data = await calculateBandwidth(account);
 			dispatch(update_Bandwidth(data));
 		},
-		onGetAccountUsername: async account => {
+		getAccountUsername: async account => {
 			const username = await getAccountUsername(account);
 			dispatch(updateUsername(username));
+		},
+		getAccountAvatar: async account => {
+			const avatar = await getAccountAvatar(account);
+			dispatch(updateAvatar(avatar));
 		},
 	};
 };

@@ -6,13 +6,15 @@ import {
 	UPDATE_ISLOGIN,
 	UPDATE_BALANCE,
 	RESET_BALANCE,
-	UPDATE_BANDWIDTH
+	UPDATE_BANDWIDTH,
+	UPDATE_AVATAR,
 } from '../actions/UserProfileReducer';
 
 const inititalState = {
 	isLogin: false,
 	publicKey: 'GDJXKJMBXBSRCPN6LOYYASV7U5WIG5ZHOUW7D3X5I6AVEUHFVANTLH5K',
 	privateKey: 'SDKGX6GW3YCUS34RPT3OM5UAJKHG4YINWFNO2LRGWGO5WR3LLRZSP63A',
+	avatar: '',
 	userName: '',
 	balance: 0,
 	isEditing: false,
@@ -33,6 +35,12 @@ const UserProfileReducer = (state = inititalState, action) => {
 		return {
 			...state,
 			userName: action.data,
+		};
+	}
+	case UPDATE_AVATAR: {
+		return {
+			...state,
+			avatar: action.data,
 		};
 	}
 	case UPDATE_PUBLICKEY: {
