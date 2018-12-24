@@ -1,8 +1,13 @@
-import { UPDATE_FOLLOWING } from '../actions/FollowReducerActions';
+import {
+	UPDATE_FOLLOWING,
+	UPDATE_NEW_FOLLOWING_USER,
+	ADD_NEW_FOLLOWING_USER,
+} from '../actions/FollowReducerActions';
 
 const inititalState = {
 	following: [],
 	follower: [],
+	newFollowingUser: '',
 };
 
 const FollowReducer = (state = inititalState, action) => {
@@ -12,6 +17,13 @@ const FollowReducer = (state = inititalState, action) => {
 			...state,
 			following: action.data,
 		};
+	}
+	case UPDATE_NEW_FOLLOWING_USER: {
+		return { ...state, newFollowingUser: action.data };
+	}
+	case ADD_NEW_FOLLOWING_USER: {
+		const data = state.following.push(action.data);
+		return { ...state, following: data };
 	}
 	default:
 		return state;

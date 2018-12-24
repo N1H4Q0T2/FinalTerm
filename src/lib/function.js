@@ -512,6 +512,73 @@ const getFollowing = async account => {
 	return result;
 };
 
+// Kiem tra xem tai khoan co ton tai hay khong
+const checkIfAccountIsExits = async account => {
+	const url = `${api.API_GET_ACCOUNT_TRANSACTIONS}${account}%27%22`;
+	const response = await axios({
+		url,
+		method: 'GET',
+	});
+	return response.data.result.total_count !== '0' ? true : false;
+};
+
+// Thuc hien following mot tai khoan
+const followAnotherAccount = async (
+	account,
+	privateKey,
+	data,
+	bandwidth,
+	bandwidthTime,
+	bandwidthLimit
+) => {
+	const allTransaction = await getAllTransactions(account);
+	const sequence = getSequence(allTransaction, account);
+	const tmp = data.map(item => {
+		return Buffer.from(base32.decode(item));
+	});
+	const addresses = v1.Followings.encode({
+		addresses: tmp,
+	});
+	const tx = {
+		version: 1,
+		sequence: sequence,
+		memo: Buffer.alloc(0),
+		account: account,
+		operation: 'update_account',
+		params: {
+			key: 'followings',
+			value: addresses,
+		},
+	};
+	transaction.sign(tx, privateKey);
+	const isEnoughBandwidth = checkIfEnoughBandwidth(
+		transaction.encode(tx),
+		bandwidth,
+		bandwidthTime,
+		bandwidthLimit,
+		new Date()
+	);
+	if (isEnoughBandwidth) {
+		const txEncode = transaction.encode(tx).toString('base64');
+		return axios
+			.post(`https://${api.HOST}/`, {
+				jsonrpc: '2.0',
+				id: 1,
+				method: 'broadcast_tx_commit',
+				params: [`${txEncode}`],
+			})
+			.then(res => {
+				console.log(res.data);
+				return true;
+			})
+			.catch(e => {
+				return false;
+			});
+	} else {
+		return false;
+	}
+};
+
 export {
 	postContent,
 	getFollowing,
@@ -522,5 +589,7 @@ export {
 	getAccountUsername,
 	updateAccountAvatar,
 	updateAccountProfile,
+	followAnotherAccount,
+	checkIfAccountIsExits,
 	calculateAccountBalance,
 };

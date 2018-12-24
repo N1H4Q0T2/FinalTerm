@@ -6,5 +6,16 @@ import Follow from './Follow/FollowContainer';
 import TransferMoney from './TransferMoney/TransferMoney';
 import Login from './Login/Login';
 import Post from './Post/Post';
+import FollowDashboard from './FollowDashboard/FollowDashboardContainer';
 
-export { Dashboard, Header, UserInfo, Wall, Follow, TransferMoney, Login, Post };
+export {
+	Dashboard,
+	Header,
+	UserInfo,
+	Wall,
+	Follow,
+	TransferMoney,
+	Login,
+	Post,
+	FollowDashboard,
+};

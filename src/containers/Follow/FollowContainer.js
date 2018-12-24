@@ -26,7 +26,6 @@ class FollowerContainer extends React.Component {
 		this.props.updateRoute('/transfer');
 		this.props.updateAddress(data);
 		localStorage.setItem('currentRoute', '/transfer');
-
 	};
 
 	render() {
@@ -62,7 +61,12 @@ const mapDispatchToProps = dispatch => {
 		getFollowing: async account => {
 			const followingList = await getFollowing(account);
 			var result = [];
-			for (var i = 0; i < followingList.length; i++) {
+			var index = 0;
+			if (
+				account === 'GDJXKJMBXBSRCPN6LOYYASV7U5WIG5ZHOUW7D3X5I6AVEUHFVANTLH5K'
+			) // account bi sai trong follow
+				index = 2;
+			for (var i = index; i < followingList.length; i++) {
 				var currentAccount = followingList[i];
 				var username = await getAccountUsername(currentAccount);
 				var avatar = await getAccountAvatar(currentAccount);

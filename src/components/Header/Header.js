@@ -13,7 +13,12 @@ const Header = props => (
 				TRANSFER
 			</button>
 		)}
-		{props.currentRoute !== '/dashboard' && (
+		{props.currentRoute === '/dashboard' && (
+			<button className="Header_TransferButton" onClick={props.onFollow}>
+				FOLLOW
+			</button>
+		)}
+		{props.currentRoute !== '/dashboard' && props.currentRoute !== '/' && (
 			<button className="Header_TransferButton" onClick={props.onHome}>
 				HOME
 			</button>

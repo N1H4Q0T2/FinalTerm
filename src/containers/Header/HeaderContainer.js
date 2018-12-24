@@ -10,7 +10,7 @@ class HeaderContainer extends React.Component {
 		var currentRoute = localStorage.getItem('currentRoute');
 		if (currentRoute !== null) {
 			this.props.updateRoute(currentRoute);
-		} 	
+		}
 	}
 
 	onTransfer = () => {
@@ -37,6 +37,14 @@ class HeaderContainer extends React.Component {
 		localStorage.setItem('currentRoute', '/dashboard');
 	};
 
+	onFollow = () => {
+		this.props.history.push({
+			pathname: '/followDashboard',
+		});
+		this.props.updateRoute('/followDashboard');
+		localStorage.setItem('currentRoute', '/followDashboard');
+	};
+
 	onLogOut = () => {
 		this.props.reset_Balance();
 		this.props.history.push({
@@ -53,6 +61,7 @@ class HeaderContainer extends React.Component {
 				onTransfer={this.onTransfer}
 				onPost={this.onPost}
 				onHome={this.onHome}
+				onFollow={this.onFollow}
 				currentRoute={this.props.currentRoute}
 			/>
 		);
