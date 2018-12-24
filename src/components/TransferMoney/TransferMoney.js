@@ -19,7 +19,7 @@ const TransferMoney = props => {
 					<p className="TransferMoney_field">Address</p>
 					<input
 						className="TransferMoney_input"
-						placeholder={props.address}
+						value={props.address}
 						onChange={e => props.updateAddress(e.target.value)}
 					/>
 				</div>

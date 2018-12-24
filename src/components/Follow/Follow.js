@@ -2,14 +2,24 @@ import React from 'react';
 import './FollowStyle.css';
 import defaultAvatar from '../../assets/images/user.png';
 
-const FollowList = ({ username, avatar, address }) => {
+const FollowList = ({ username, avatar, address, addressForShow, onTransferMoney }) => {
 	return (
 		<div>
-			<div className="Follow_FollowList_Container">
-				<img className="Follow_FollowList_Image" src={avatar === '--' ? defaultAvatar : `data:image/jpeg;base64,${avatar}`} />
+			<div
+				className="Follow_FollowList_Container"
+				onClick={() => {
+					onTransferMoney(address);
+				}}
+			>
+				<img
+					className="Follow_FollowList_Image"
+					src={
+						avatar === '--' ? defaultAvatar : `data:image/jpeg;base64,${avatar}`
+					}
+				/>
 				<div className="Follow_FollowList_div1">
 					<span className="Follow_FollowList_Username">{username}</span>
-					<span className="Follow_FollowList_SubContent">{address}</span>
+					<span className="Follow_FollowList_SubContent">{addressForShow}</span>
 				</div>
 			</div>
 			<div className="Follow_FollowList_div2" />
@@ -25,7 +35,9 @@ const Follower = props => {
 			<FollowList
 				username={currentAccount.username}
 				avatar={currentAccount.avatar}
-				address={`${currentAccount.address.slice(0, 15)}...`}
+				address={currentAccount.address}
+				addressForShow={`${currentAccount.address.slice(0, 15)}...`}
+				onTransferMoney={props.onTransferMoney}
 			/>
 		);
 		followData.push(item);
