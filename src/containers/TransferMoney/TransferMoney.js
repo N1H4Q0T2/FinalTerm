@@ -1,18 +1,13 @@
 import React from 'react';
-import axios from 'axios';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import TransferMoney from '../../components/TransferMoney/TransferMoney';
 import {
-	updateAddress,
 	updateAmount,
+	updateAddress,
 	submitTransfer,
 	updateSubmitSuccess,
 } from '../../actions/TransferReducerActions';
-import * as v1 from '../../lib/tx/v1';
-import * as transaction from '../../lib/tx';
-import * as api from '../../config/api';
-import { test } from '../../lib/test';
 import { transferMoney } from '../../lib/function';
 
 class TransferMoneyContainer extends React.Component {

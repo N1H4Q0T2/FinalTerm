@@ -10,6 +10,7 @@ import {
 	MAX_CELLULOSE,
 	NETWORK_BANDWIDTH,
 } from '../config/metric';
+import base32 from 'base32.js';
 const vstruct = require('varstruct');
 
 const PlainTextContent = vstruct([
@@ -17,6 +18,8 @@ const PlainTextContent = vstruct([
 	{ name: 'text', type: vstruct.VarString(vstruct.UInt16BE) },
 ]);
 
+// Ham dung chung
+// Lay sequence cho tx moi
 const getSequence = (transactions, account) => {
 	const allTransaction = transactions.map(item => {
 		const data = Buffer.from(item.tx, 'base64');
@@ -28,7 +31,7 @@ const getSequence = (transactions, account) => {
 	});
 	return accountTrans.length + 1;
 };
-
+// Lay tat ca transaction cua account
 const getAllTransactions = async account => {
 	const per_page = 50;
 	var currentPage = 1;
@@ -47,7 +50,7 @@ const getAllTransactions = async account => {
 	}
 	return allTransaction;
 };
-
+// Lay cac transaction cua account co trong page
 const getTransaction = async (account, per_page, page) => {
 	var url = `${
 		api.API_GET_ACCOUNT_TRANSACTIONS
@@ -58,7 +61,7 @@ const getTransaction = async (account, per_page, page) => {
 	});
 	return response.data.result.txs;
 };
-
+// Dua tx len block
 const commitTxToBroadcast = txEncode => {
 	const url = `${api.API_COMMIT_TRANSACTION}${txEncode}`;
 	return axios
@@ -73,14 +76,14 @@ const commitTxToBroadcast = txEncode => {
 			return false;
 		});
 };
-
+// Lay thoi gian tx duoc tao
 const getTxTime = height => {
 	const url = `${api.API_BLOCK_HEIGHT}${height}`;
 	return axios.get(url).then(response => {
 		return new Date(response.data.result.block.header.time);
 	});
 };
-
+// Tinh bandwidth cua mot transaction
 const bandwidth = (tx, time, bandwidthTime, bandwidth) => {
 	const base64Data = Buffer.from(tx, 'base64');
 	const txSize = base64Data.length;
@@ -105,6 +108,8 @@ const bandwidth = (tx, time, bandwidthTime, bandwidth) => {
 	return data;
 };
 
+// Ham chinh
+// Tao account moi
 const createAcccount = async () => {
 	const account = key.publicKey1;
 	const key = Keypair.random();
@@ -144,6 +149,7 @@ const createAcccount = async () => {
 	}
 };
 
+// Lay account username
 const getAccountUsername = async account => {
 	const allTransaction = await getAllTransactions(account);
 	var username = '';
@@ -189,6 +195,7 @@ const readAllTransactionsOfOneACcount = async account => {
 	});
 };
 
+// Tinh so balance cua account
 const calculateAccountBalance = async (account, inputData) => {
 	const allTransaction = inputData
 		? inputData
@@ -208,6 +215,7 @@ const calculateAccountBalance = async (account, inputData) => {
 	return balance;
 };
 
+// Kiem tra bandwidth cua account co du de thuc hien commit
 const checkIfEnoughBandwidth = (
 	tx,
 	bandwidth,
@@ -234,6 +242,7 @@ const checkIfEnoughBandwidth = (
 	return true;
 };
 
+// Chuyen khoan cho account khac
 const transferMoney = async (
 	account,
 	privateKey,
@@ -273,6 +282,7 @@ const transferMoney = async (
 	}
 };
 
+// Dang bai viet
 const postContent = async (
 	account,
 	privateKey,
@@ -315,6 +325,27 @@ const postContent = async (
 	}
 };
 
+// Lay tat ca bai post cua account
+const getAccountPosts = async account => {
+	const allTransaction = await getAllTransactions(account);
+	var result = [];
+	allTransaction.map(item => {
+		const data = Buffer.from(item.tx, 'base64');
+		const decodeData = v1.decode(data);
+		if (decodeData.operation === 'post') {
+			try {
+				const content_base64 = Buffer.from(decodeData.params.content, 'base64');
+				const real_data = v1.PlainTextContent.decode(content_base64);
+				result.push(real_data);
+			} catch (e) {
+				console.log();
+			}
+		}
+	});
+	return result;
+};
+
+// Tinh bandwidth hien tai cua account
 const calculateBandwidth = async account => {
 	const allTransaction = await getAllTransactions(account);
 	const accountBalance = await calculateAccountBalance(account, allTransaction);
@@ -344,6 +375,7 @@ const calculateBandwidth = async account => {
 	return data;
 };
 
+// Cap nhat username cua account
 const updateAccountProfile = async (
 	account,
 	privateKey,
@@ -384,25 +416,7 @@ const updateAccountProfile = async (
 	}
 };
 
-const getAccountPosts = async account => {
-	const allTransaction = await getAllTransactions(account);
-	var result = [];
-	allTransaction.map(item => {
-		const data = Buffer.from(item.tx, 'base64');
-		const decodeData = v1.decode(data);
-		if (decodeData.operation === 'post') {
-			try {
-				const content_base64 = Buffer.from(decodeData.params.content, 'base64');
-				const real_data = v1.PlainTextContent.decode(content_base64);
-				result.push(real_data);
-			} catch (e) {
-				console.log();
-			}
-		}
-	});
-	return result;
-};
-
+// Lay avatar cua account
 const getAccountAvatar = async account => {
 	const allTransaction = await getAllTransactions(account);
 	var avatar = '';
@@ -422,7 +436,7 @@ const getAccountAvatar = async account => {
 	});
 	return avatar;
 };
-
+// Cap nhat avatar cua account
 const updateAccountAvatar = async (
 	account,
 	privateKey,
@@ -475,8 +489,32 @@ const updateAccountAvatar = async (
 	}
 };
 
+// Lay danh sach following
+const getFollowing = async account => {
+	const allTransaction = await getAllTransactions(account);
+	var result = [];
+	allTransaction.map(item => {
+		const data = Buffer.from(item.tx, 'base64');
+		const decodeData = v1.decode(data);
+		if (decodeData.operation === 'update_account') {
+			if (decodeData.params.key === 'followings') {
+				try {
+					const data = v1.Followings.decode(decodeData.params.value);
+					data.addresses.forEach(item => {
+						result.push(base32.encode(item));
+					});
+				} catch (e) {
+					console.log();
+				}
+			}
+		}
+	});
+	return result;
+};
+
 export {
 	postContent,
+	getFollowing,
 	transferMoney,
 	getAccountPosts,
 	getAccountAvatar,

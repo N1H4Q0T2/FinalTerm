@@ -10,12 +10,19 @@ import {
 	MAX_CELLULOSE,
 	NETWORK_BANDWIDTH,
 } from '../config/metric';
+import base32 from 'base32.js';
 const vstruct = require('varstruct');
-const fs = require('fs');
 
 const PlainTextContent = vstruct([
 	{ name: 'type', type: vstruct.UInt8 },
 	{ name: 'text', type: vstruct.VarString(vstruct.UInt16BE) },
+]);
+
+const Followings = vstruct([
+	{
+		name: 'addresses',
+		type: vstruct.VarArray(vstruct.UInt16BE, vstruct.Buffer(35)),
+	},
 ]);
 
 const getSequence = (transactions, account) => {
@@ -167,7 +174,7 @@ const readAllTransactionsOfOneACcount = async account => {
 	allTransaction.map(item => {
 		const data = Buffer.from(item.tx, 'base64');
 		const decodeData = v1.decode(data);
-		console.log(decodeData);
+		//console.log(decodeData);
 		if (decodeData.operation === 'post') {
 			try {
 				const y = Buffer.from(decodeData.params.content, 'base64');
@@ -179,7 +186,7 @@ const readAllTransactionsOfOneACcount = async account => {
 		if (decodeData.operation === 'update_account') {
 			if (decodeData.params.key === 'name') {
 				try {
-					console.log(decodeData.params.value.toString());
+					// console.log(decodeData.params.value.toString());
 				} catch (e) {
 					console.log();
 				}
@@ -187,10 +194,17 @@ const readAllTransactionsOfOneACcount = async account => {
 			if (decodeData.params.key === 'picture') {
 				try {
 					const data = decodeData.params.value.toString('base64');
-					console.log(data.slice(0));
+					//console.log(data.slice(0));
 				} catch (e) {
 					console.log();
 				}
+			}
+			if (decodeData.params.key === 'followings') {
+				const data = v1.Followings.decode(decodeData.params.value);
+				data.addresses.forEach(item => {
+					console.log(base32.encode(item));
+				});
+				console.log('==========');
 			}
 		}
 	});
@@ -376,9 +390,44 @@ const getAccountAvatar = async account => {
 	return avatar;
 };
 
-const test = async data => {
-	getAccountAvatar(key.publicKey1);
-	
+const followAnotherAccount = async (account, privateKey, data) => {
+	const allTransaction = await getAllTransactions(account);
+	const sequence = getSequence(allTransaction, account);
+	const tmp = data.map(item => {
+		return Buffer.from(base32.decode(item));
+	});
+	const addresses = Followings.encode({
+		addresses: tmp,
+	});
+	const tx = {
+		version: 1,
+		sequence: sequence,
+		memo: Buffer.alloc(0),
+		account: account,
+		operation: 'update_account',
+		params: {
+			key: 'followings',
+			value: addresses,
+		},
+	};
+	transaction.sign(tx, privateKey);
+	const txEncode = '0x' + transaction.encode(tx).toString('hex');
+	const result = await commitTxToBroadcast(txEncode);
+	return result;
+};
+
+const test = async () => {
+	// const addresses = [
+	// 	key.publicKey2,
+	// 	'GAJQ47RMDTXYTCBMMW4A4DUMTB5RQLTGQZDMMABW6RTQJGKINJ4JTRTP',
+	// ];
+	// const result = await followAnotherAccount(
+	// 	key.publicKey1,
+	// 	key.privateKey1,
+	// 	addresses
+	// );
+	// console.log(result);
+	// const result = await readAllTransactionsOfOneACcount(key.publicKey1);
 };
 
 export { test };
