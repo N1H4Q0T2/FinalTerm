@@ -21,14 +21,18 @@ class WallContainer extends React.Component {
 	}
 
 	onLoadMoreData = async () => {
-		const { accountPosts } = this.props.WallReducerData;
+		const { accountPosts, everyonePosts } = this.props.WallReducerData;
 		const { publicKey } = this.props.UserProfileReducerData;
-		const result = await this.props.onLoadAccountPost(
-			publicKey,
-			accountPosts[0].currentPage,
-			accountPosts[0].posts
-		);
-		// console.log(result);
+		const { following } = this.props.FollowReducerData;
+		if (this.state.mode === 1) {
+			await this.props.onLoadAccountPost(
+				publicKey,
+				accountPosts[0].currentPage,
+				accountPosts[0].posts
+			);
+		} else {
+			await this.props.onLoadEveryonePost(following, everyonePosts);
+		}
 	};
 
 	onChangeMode = mode => {
@@ -39,7 +43,7 @@ class WallContainer extends React.Component {
 				alert('Please wait for following list is loaded.');
 			} else {
 				if (everyonePosts.length === 0) {
-					this.props.onLoadEveryonePost(following);
+					this.props.onLoadEveryonePost(following, null);
 				}
 				this.setState({ mode: mode });
 			}
@@ -100,16 +104,38 @@ const mapDispatchToProps = dispatch => {
 				}
 			}
 		},
-		onLoadEveryonePost: async addresses => {
+		onLoadEveryonePost: async (addresses, oldData) => {
 			var data = [];
 			for (var i = 0; i < addresses.length; i++) {
-				const accountPosts = await getAccountPosts(addresses[i].address);
-				const accountData = {
-					...addresses[i],
-					posts: accountPosts,
-					currentPage: 1,
-				};
-				data.push(accountData);
+				if (oldData === null) {
+					const accountPosts = await getAccountPostsInPage(
+						addresses[i].address,
+						20,
+						1
+					);
+					const accountData = {
+						...addresses[i],
+						posts: accountPosts.newPosts,
+						currentPage: accountPosts.newPage,
+					};
+					console.log(accountData);
+					data.push(accountData);
+				} else {
+					const accountCurrentPage = oldData[i].currentPage;
+					const accountPosts = await getAccountPostsInPage(
+						addresses[i].address,
+						20,
+						accountCurrentPage
+					);
+					var newData = oldData[i].posts;
+					newData = newData.concat(accountPosts.newPosts);
+					const accountData = {
+						...addresses[i],
+						posts: newData,
+						currentPage: accountPosts.newPage,
+					};
+					data.push(accountData);
+				}
 			}
 			dispatch(updateEveryonePosts(data));
 		},

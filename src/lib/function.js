@@ -580,28 +580,33 @@ const getAccountPageAvailable = async (account, per_page) => {
 
 // Lay nhung bai post cua account co trong page
 const getAccountPostsInPage = async (account, per_page, page) => {
-	const transactions = await getTransaction(account, per_page, page);
 	const total_page = await getAccountPageAvailable(account, per_page);
 	var result = [];
 	var newPage;
 	if (page <= total_page) {
-		transactions.forEach(item => {
-			const data = Buffer.from(item.tx, 'base64');
-			const decodeData = v1.decode(data);
-			if (decodeData.operation === 'post') {
-				try {
-					const content_base64 = Buffer.from(
-						decodeData.params.content,
-						'base64'
-					);
-					const real_data = v1.PlainTextContent.decode(content_base64);
-					result.push(real_data);
-				} catch (e) {
-					console.log();
+		for (var currentPage = page; currentPage <= total_page; currentPage++) {
+			var transactions = await getTransaction(account, per_page, currentPage);
+			transactions.forEach(item => {
+				const data = Buffer.from(item.tx, 'base64');
+				const decodeData = v1.decode(data);
+				if (decodeData.operation === 'post') {
+					try {
+						const content_base64 = Buffer.from(
+							decodeData.params.content,
+							'base64'
+						);
+						const real_data = v1.PlainTextContent.decode(content_base64);
+						result.push(real_data);
+					} catch (e) {
+						console.log();
+					}
 				}
+			});
+			newPage = currentPage+1;
+			if (result.length !== 0) {
+				break;
 			}
-		});
-		newPage = page + 1;
+		}
 	} else {
 		newPage = page;
 	}
