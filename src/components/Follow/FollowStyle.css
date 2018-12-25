@@ -75,3 +75,12 @@
   margin-top: 10px;
   margin-left: -20px;
 }
+
+.Follow_Loading {
+  font-size: 20px;
+  font-weight: bolder;
+  letter-spacing: 4px;
+  color: #1c313a;
+  margin-left: 23%;
+  margin-top: 50%;
+}

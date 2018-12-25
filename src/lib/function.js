@@ -559,21 +559,9 @@ const followAnotherAccount = async (
 		new Date()
 	);
 	if (isEnoughBandwidth) {
-		const txEncode = transaction.encode(tx).toString('base64');
-		return axios
-			.post(`https://${api.HOST}/`, {
-				jsonrpc: '2.0',
-				id: 1,
-				method: 'broadcast_tx_commit',
-				params: [`${txEncode}`],
-			})
-			.then(res => {
-				console.log(res.data);
-				return true;
-			})
-			.catch(e => {
-				return false;
-			});
+		const txEncode = '0x' + transaction.encode(tx).toString('hex');
+		const result = await commitTxToBroadcast(txEncode);
+		return result;
 	} else {
 		return false;
 	}

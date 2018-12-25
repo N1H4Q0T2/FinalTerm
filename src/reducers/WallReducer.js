@@ -1,7 +1,11 @@
-import { UPDATE_ACCOUNT_POSTS } from '../actions/WallReducerActions';
+import {
+	UPDATE_ACCOUNT_POSTS,
+	UPDATE_EVERYONE_POSTS,
+} from '../actions/WallReducerActions';
 
 const inititalState = {
 	accountPosts: [],
+	everyonePosts: [],
 };
 
 const WallReducer = (state = inititalState, action) => {
@@ -10,6 +14,12 @@ const WallReducer = (state = inititalState, action) => {
 		return {
 			...state,
 			accountPosts: action.data,
+		};
+	}
+	case UPDATE_EVERYONE_POSTS: {
+		return {
+			...state,
+			everyonePosts: action.data,
 		};
 	}
 	default:

@@ -2,7 +2,13 @@ import React from 'react';
 import './FollowStyle.css';
 import defaultAvatar from '../../assets/images/user.png';
 
-const FollowList = ({ username, avatar, address, addressForShow, onTransferMoney }) => {
+const FollowList = ({
+	username,
+	avatar,
+	address,
+	addressForShow,
+	onTransferMoney,
+}) => {
 	return (
 		<div>
 			<div
@@ -48,7 +54,11 @@ const Follower = props => {
 				<span className="Follow_Title">{props.title}</span>
 			</div>
 			<div className="Follow_div2">
-				<ul className="Follow_List">{followData}</ul>
+				{props.data.length === 0 ? (
+					<p className="Follow_Loading">LOADING! PLEASE WAIT</p>
+				) : (
+					<ul className="Follow_List">{followData}</ul>
+				)}
 			</div>
 		</div>
 	);
