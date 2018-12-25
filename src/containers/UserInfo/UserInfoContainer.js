@@ -174,7 +174,8 @@ const mapDispatchToProps = dispatch => {
 			dispatch(updateUsername(username));
 		},
 		getAccountAvatar: async account => {
-			const avatar = await getAccountAvatar(account);
+			var avatar = await getAccountAvatar(account);
+			if (avatar === '') avatar = '--';
 			dispatch(updateAvatar(avatar));
 		},
 	};
