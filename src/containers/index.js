@@ -7,6 +7,7 @@ import TransferMoney from './TransferMoney/TransferMoney';
 import Login from './Login/Login';
 import Post from './Post/Post';
 import FollowDashboard from './FollowDashboard/FollowDashboardContainer';
+import Comment from './Comment/CommentContainer';
 
 export {
 	Dashboard,
@@ -18,4 +19,5 @@ export {
 	Login,
 	Post,
 	FollowDashboard,
+	Comment,
 };

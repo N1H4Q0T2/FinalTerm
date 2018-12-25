@@ -1,0 +1,10 @@
+.Comment_Container {
+  align-self: center;
+  width: 500px;
+  height: 500px;
+  border-radius: 3px;
+  background-color: red;
+  box-shadow: 0 5px 5px rgba(0, 0, 0, 0.1), 0 6px 6px rgba(0, 0, 0, 0.15);
+  position: absolute;
+  margin-left: 37%
+}

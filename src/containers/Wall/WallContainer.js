@@ -5,7 +5,10 @@ import {
 	update_AccountPosts,
 	updateEveryonePosts,
 } from '../../actions/WallReducerActions';
-import { getAccountPosts, getAccountPostsInPage } from '../../lib/function';
+import {
+	getAccountPostsInPage,
+	getAllCommentOfOnePost,
+} from '../../lib/function';
 
 class WallContainer extends React.Component {
 	constructor(props) {
@@ -13,6 +16,8 @@ class WallContainer extends React.Component {
 		this.state = {
 			mode: 1,
 			hasMore: true,
+			openCommentPopup: false,
+			onePostData: null,
 		};
 	}
 	componentDidMount() {
@@ -52,6 +57,24 @@ class WallContainer extends React.Component {
 		}
 	};
 
+	onCommentPopup = async data => {
+		const { publicKey } = this.props.UserProfileReducerData;
+		if (data !== null && this.state.openCommentPopup === false) {
+			const result = await this.props.getAllCommentOfOnePost(
+				publicKey,
+				data.data.hash
+			);
+			const newData = {
+				...data,
+				comments: result,
+			};
+			console.log(newData);
+			this.setState({ onePostData: newData });
+		}
+		if (data === null) this.setState({ openCommentPopup: false });
+		else this.setState({ openCommentPopup: true });
+	};
+
 	render() {
 		const { accountPosts, everyonePosts } = this.props.WallReducerData;
 		const { avatar, userName } = this.props.UserProfileReducerData;
@@ -64,6 +87,9 @@ class WallContainer extends React.Component {
 				username={this.state.mode === 1 ? userName : null}
 				hasMore={this.state.hasMore}
 				onLoadMoreData={this.onLoadMoreData}
+				openCommentPopup={this.state.openCommentPopup}
+				onCommentPopup={this.onCommentPopup}
+				onePostData={this.state.onePostData}
 			/>
 		);
 	}
@@ -139,9 +165,9 @@ const mapDispatchToProps = dispatch => {
 			}
 			dispatch(updateEveryonePosts(data));
 		},
-		onTest: async account => {
-			const result = await getAccountPostsInPage(account, 50, 1);
-			console.log(result);
+		getAllCommentOfOnePost: async (account, hash) => {
+			const result = await getAllCommentOfOnePost(account, hash);
+			return result;
 		},
 	};
 };

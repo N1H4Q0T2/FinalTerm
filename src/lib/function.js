@@ -578,6 +578,36 @@ const getAccountPageAvailable = async (account, per_page) => {
 	return Math.ceil(total_count / per_page);
 };
 
+// Lay tat ca comment cua 1 bai post
+const getAllCommentOfOnePost = async (account, hash) => {
+	const url = `${api.API_GET_ALL_COMMENT}${hash}%27%22`;
+	const allComment = await axios({
+		url,
+		method: 'GET',
+	});
+	var result = [];
+	for (let i = 0; i < allComment.data.result.txs.length; i++) {
+		const item = allComment.data.result.txs[i];
+		try {
+			const base64Data = Buffer.from(item.tx, 'base64');
+			const decodeData = v1.decode(base64Data);
+			const commentBase64 = Buffer.from(decodeData.params.content, 'base64');
+			const comment = PlainTextContent.decode(commentBase64);
+			const accountAvatar = await getAccountAvatar(decodeData.account);
+			const accountUsername = await getAccountUsername(decodeData.account);
+			const data = {
+				comment: comment,
+				avatar: accountAvatar === '' ? '--' : accountAvatar,
+				username: accountUsername,
+			};
+			result.push(data);
+		} catch (e) {
+			console.log();
+		}
+	}
+	return result;
+};
+
 // Lay nhung bai post cua account co trong page
 const getAccountPostsInPage = async (account, per_page, page) => {
 	const total_page = await getAccountPageAvailable(account, per_page);
@@ -595,14 +625,18 @@ const getAccountPostsInPage = async (account, per_page, page) => {
 							decodeData.params.content,
 							'base64'
 						);
-						const real_data = v1.PlainTextContent.decode(content_base64);
-						result.push(real_data);
+						var tmp = v1.PlainTextContent.decode(content_base64);
+						var realData = {
+							...tmp,
+							hash: item.hash,
+						};
+						result.push(realData);
 					} catch (e) {
 						console.log();
 					}
 				}
 			});
-			newPage = currentPage+1;
+			newPage = currentPage + 1;
 			if (result.length !== 0) {
 				break;
 			}
@@ -630,5 +664,6 @@ export {
 	followAnotherAccount,
 	checkIfAccountIsExits,
 	getAccountPostsInPage,
+	getAllCommentOfOnePost,
 	calculateAccountBalance,
 };

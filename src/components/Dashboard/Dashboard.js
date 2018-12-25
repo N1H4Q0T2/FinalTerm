@@ -1,5 +1,5 @@
 import React from 'react';
-import { UserInfo, Wall, Follow } from '../../containers';
+import { UserInfo, Wall, Follow, Comment } from '../../containers';
 import './DashboardStyle.css';
 
 const Dashboard = props => {
