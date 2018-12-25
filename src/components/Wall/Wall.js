@@ -4,6 +4,7 @@ import commentIcon from '../../assets/images/comment_icon.png';
 import likeIcon from '../../assets/images/like_icon.png';
 import shareIcon from '../../assets/images/share_icon.png';
 import defaultAvatar from '../../assets/images/user.png';
+import InfiniteScroll from 'react-infinite-scroller';
 
 const PostList = ({ data, avatar, username }) => {
 	return (
@@ -36,73 +37,93 @@ const PostList = ({ data, avatar, username }) => {
 	);
 };
 
-const Wall = props => {
-	let postList = [];
-	console.log(props.postData);
-	if (props.mode === 1) {
-		for (let i = 0; i < props.postData.length; i++) {
-			const item = (
-				<PostList
-					data={props.postData[i]}
-					avatar={props.avatar}
-					username={props.username}
-				/>
-			);
-			postList.push(item);
+class Wall extends React.Component {
+	handleScroll = () => {
+		if (
+			this.scroller &&
+			this.scroller.scrollTop === this.scroller.scrollHeight - 760
+		) {
+			this.props.onLoadMoreData();
 		}
-	} else {
-		for (let i = 0; i < props.postData.length; i++) {
-			var accountPosts = [];
-			props.postData[i].posts.forEach(item => {
-				const accountPostList = (
-					<PostList
-						data={item}
-						avatar={props.postData[i].avatar}
-						username={props.postData[i].username}
-					/>
-				);
-				accountPosts.push(accountPostList);
-			});
-			postList.push(accountPosts);
+	};
+
+	render() {
+		let postList = [];
+		if (this.props.mode === 1) {
+			for (let i = 0; i < this.props.postData.length; i++) {
+				for (let j = 0; j < this.props.postData[i].posts.length; j++) {
+					const data = (
+						<PostList
+							data={this.props.postData[i].posts[j]}
+							avatar={this.props.avatar}
+							username={this.props.username}
+						/>
+					);
+					postList.push(data);
+				}
+			}
+		} else {
+			for (let i = 0; i < this.props.postData.length; i++) {
+				var accountPosts = [];
+				this.props.postData[i].posts.forEach(item => {
+					const accountPostList = (
+						<PostList
+							data={item}
+							avatar={this.props.postData[i].avatar}
+							username={this.props.postData[i].username}
+						/>
+					);
+					accountPosts.push(accountPostList);
+				});
+				postList.push(accountPosts);
+			}
 		}
-	}
-	return (
-		<div>
-			<button
-				className="Wall_Button"
-				onClick={() => {
-					props.onChangeMode(1);
-				}}
-			>
-				YOUR POST
-			</button>
-			<button
-				className="Wall_Button"
-				style={{ marginLeft: 20 }}
-				onClick={() => {
-					props.onChangeMode(2);
-				}}
-			>
-				EVERYONE POST
-			</button>
-			<button
-				className="Wall_Button"
-				style={{ marginLeft: 20 }}
-				onClick={() => {
-					alert('REFRESHING');
-				}}
-			>
-				REFRESH
-			</button>
-			<div className="Wall_Container">
-				{props.postData.length === 0 ? (
-					<p className="Wall_Loading">LOADING! PLEASE WAIT</p>
-				) : (
-					<ul className="Wall_List">{postList}</ul>
-				)}
+		return (
+			<div>
+				<button
+					className="Wall_Button"
+					onClick={() => {
+						this.props.onChangeMode(1);
+					}}
+				>
+					YOUR POST
+				</button>
+				<button
+					className="Wall_Button"
+					style={{ marginLeft: 20 }}
+					onClick={() => {
+						this.props.onChangeMode(2);
+					}}
+				>
+					EVERYONE POST
+				</button>
+				<button
+					className="Wall_Button"
+					style={{ marginLeft: 20 }}
+					onClick={() => {
+						alert('REFRESHING');
+					}}
+				>
+					REFRESH
+				</button>
+				<div className="Wall_Container">
+					{this.props.postData.length === 0 ? (
+						<p className="Wall_Loading">LOADING! PLEASE WAIT</p>
+					) : (
+						<ul
+							className="Wall_List"
+							ref={scroller => {
+								this.scroller = scroller;
+							}}
+							onScroll={this.handleScroll}
+						>
+							{postList}
+						</ul>
+					)}
+				</div>
 			</div>
-		</div>
-	);
-};
+		);
+	}
+}
 
 export default Wall;

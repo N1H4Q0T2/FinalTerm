@@ -5,21 +5,31 @@ import {
 	update_AccountPosts,
 	updateEveryonePosts,
 } from '../../actions/WallReducerActions';
-import { getAccountPosts } from '../../lib/function';
+import { getAccountPosts, getAccountPostsInPage } from '../../lib/function';
 
 class WallContainer extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
 			mode: 1,
+			hasMore: true,
 		};
 	}
 	componentDidMount() {
 		const { publicKey } = this.props.UserProfileReducerData;
-		this.props.onLoadAccountPost(publicKey);
+		this.props.onLoadAccountPost(publicKey, 1, null);
 	}
 
-	componentWillUpdate() {}
+	onLoadMoreData = async () => {
+		const { accountPosts } = this.props.WallReducerData;
+		const { publicKey } = this.props.UserProfileReducerData;
+		const result = await this.props.onLoadAccountPost(
+			publicKey,
+			accountPosts[0].currentPage,
+			accountPosts[0].posts
+		);
+		// console.log(result);
+	};
 
 	onChangeMode = mode => {
 		const { following } = this.props.FollowReducerData;
@@ -48,6 +58,8 @@ class WallContainer extends React.Component {
 				mode={this.state.mode}
 				avatar={this.state.mode === 1 ? avatar : null}
 				username={this.state.mode === 1 ? userName : null}
+				hasMore={this.state.hasMore}
+				onLoadMoreData={this.onLoadMoreData}
 			/>
 		);
 	}
@@ -63,22 +75,47 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
 	return {
-		onLoadAccountPost: async account => {
-			const result = await getAccountPosts(account);
-			dispatch(update_AccountPosts(result));
+		onLoadAccountPost: async (account, page, oldData) => {
+			const result = await getAccountPostsInPage(account, 50, page);
+			if (result.newPage !== page) {
+				if (oldData === null) {
+					const data = [
+						{
+							posts: result.newPosts,
+							currentPage: result.newPage,
+						},
+					];
+					dispatch(update_AccountPosts(data));
+				} else {
+					var newData = oldData;
+					newData = newData.concat(result.newPosts);
+					const data = [
+						{
+							posts: newData,
+							currentPage: result.newPage,
+						},
+					];
+					console.log(newData);
+					dispatch(update_AccountPosts(data));
+				}
+			}
 		},
 		onLoadEveryonePost: async addresses => {
-			console.log(addresses);
 			var data = [];
 			for (var i = 0; i < addresses.length; i++) {
 				const accountPosts = await getAccountPosts(addresses[i].address);
 				const accountData = {
 					...addresses[i],
 					posts: accountPosts,
+					currentPage: 1,
 				};
 				data.push(accountData);
 			}
 			dispatch(updateEveryonePosts(data));
+		},
+		onTest: async account => {
+			const result = await getAccountPostsInPage(account, 50, 1);
+			console.log(result);
 		},
 	};
 };

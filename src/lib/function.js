@@ -567,6 +567,51 @@ const followAnotherAccount = async (
 	}
 };
 
+// Lay tong so page cua 1 account
+const getAccountPageAvailable = async (account, per_page) => {
+	const url = `${api.API_GET_ACCOUNT_TRANSACTIONS}${account}%27%22`;
+	const response = await axios({
+		url,
+		method: 'GET',
+	});
+	const total_count = response.data.result.total_count;
+	return Math.ceil(total_count / per_page);
+};
+
+// Lay nhung bai post cua account co trong page
+const getAccountPostsInPage = async (account, per_page, page) => {
+	const transactions = await getTransaction(account, per_page, page);
+	const total_page = await getAccountPageAvailable(account, per_page);
+	var result = [];
+	var newPage;
+	if (page <= total_page) {
+		transactions.forEach(item => {
+			const data = Buffer.from(item.tx, 'base64');
+			const decodeData = v1.decode(data);
+			if (decodeData.operation === 'post') {
+				try {
+					const content_base64 = Buffer.from(
+						decodeData.params.content,
+						'base64'
+					);
+					const real_data = v1.PlainTextContent.decode(content_base64);
+					result.push(real_data);
+				} catch (e) {
+					console.log();
+				}
+			}
+		});
+		newPage = page + 1;
+	} else {
+		newPage = page;
+	}
+	const data = {
+		newPosts: result,
+		newPage: newPage,
+	};
+	return data;
+};
+
 export {
 	postContent,
 	getFollowing,
@@ -579,5 +624,6 @@ export {
 	updateAccountProfile,
 	followAnotherAccount,
 	checkIfAccountIsExits,
+	getAccountPostsInPage,
 	calculateAccountBalance,
 };
