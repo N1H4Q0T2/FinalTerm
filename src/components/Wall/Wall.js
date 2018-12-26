@@ -147,7 +147,6 @@ class Wall extends React.Component {
 
 	render() {
 		let postList = [];
-		console.log(this.props.postData);
 		if (this.props.mode === 1) {
 			for (let i = 0; i < this.props.postData.length; i++) {
 				for (let j = 0; j < this.props.postData[i].posts.length; j++) {

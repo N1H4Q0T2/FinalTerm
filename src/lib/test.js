@@ -87,30 +87,6 @@ const getTxTime = height => {
 	});
 };
 
-const bandwidth = (tx, time, bandwidthTime, bandwidth) => {
-	const base64Data = Buffer.from(tx, 'base64');
-	const txSize = base64Data.length;
-	const currentTime = time;
-	let diff = BANDWIDTH_PERIOD;
-	if (bandwidthTime !== null) {
-		if (
-			moment(currentTime).unix() - moment(bandwidthTime).unix() <
-			BANDWIDTH_PERIOD
-		) {
-			diff = moment(currentTime).unix() - moment(bandwidthTime).unix();
-		}
-	}
-	const bandwidthConsume = Math.ceil(
-		Math.max(0, (BANDWIDTH_PERIOD - diff) / BANDWIDTH_PERIOD) * bandwidth +
-			txSize
-	);
-	const data = {
-		bandwithTime: time,
-		bandwith: bandwidthConsume,
-	};
-	return data;
-};
-
 const createAcccount = async () => {
 	const account = key.publicKey1;
 	const key = Keypair.random();
@@ -286,9 +262,34 @@ const postContent = async (account, privateKey, data) => {
 	return result;
 };
 
-const calculateBandwidth = async account => {
+const bandwidth = (tx, time, bandwidthTime, bandwidth) => {
+	const base64Data = Buffer.from(tx, 'base64');
+	const txSize = base64Data.length;
+	const currentTime = time;
+	let diff = BANDWIDTH_PERIOD;
+	if (bandwidthTime !== null) {
+		if (
+			moment(currentTime).unix() - moment(bandwidthTime).unix() <
+			BANDWIDTH_PERIOD
+		) {
+			diff = moment(currentTime).unix() - moment(bandwidthTime).unix();
+		}
+	}
+	const bandwidthConsume = Math.ceil(
+		Math.max(0, (BANDWIDTH_PERIOD - diff) / BANDWIDTH_PERIOD) * bandwidth +
+			txSize
+	);
+	const data = {
+		bandwithTime: time,
+		bandwith: bandwidthConsume,
+	};
+	console.log(data);
+	return data;
+};
+
+const calculateBandwidth = async (account, balance) => {
 	const allTransaction = await getAllTransactions(account);
-	const accountBalance = await calculateAccountBalance(account, allTransaction);
+	const accountBalance = balance;
 	const totalTx = allTransaction.length;
 	const bandwidthLimit = Math.floor(
 		(accountBalance / MAX_CELLULOSE) * NETWORK_BANDWIDTH
@@ -298,6 +299,8 @@ const calculateBandwidth = async account => {
 	for (var i = 0; i < totalTx; i++) {
 		var _preTxTime = preTxTime;
 		const txTime = await getTxTime(allTransaction[i].height);
+		const x = Buffer.from(allTransaction[i].tx, 'base64');
+		console.log(v1.decode(x));
 		var txBandwidth = bandwidth(
 			allTransaction[i].tx,
 			txTime,
@@ -494,7 +497,12 @@ const getAllCommentOfOnePostTest = async hash => {
 	});
 };
 
-const reactOnePost = async (account, privateKey, hashCodeOfPost, typeOfReaction) => {
+const reactOnePost = async (
+	account,
+	privateKey,
+	hashCodeOfPost,
+	typeOfReaction
+) => {
 	const allTransaction = await getAllTransactions(account);
 	const sequence = getSequence(allTransaction, account);
 	const content = v1.ReactContent.encode({
@@ -519,21 +527,11 @@ const reactOnePost = async (account, privateKey, hashCodeOfPost, typeOfReaction)
 };
 
 const test = async () => {
-	// const result = await reactOnePost(
-	// 	key.publicKey1,
-	// 	key.privateKey1,
-	// 	'1B170AE893B1FA37AAF347780F59FE274B1CE2DE4DFE8B5D4115FD69ABE4B937'
+	// const result = await calculateBandwidth(
+	// 	'GAXVLYJUYND6QKGHK4FGM44XK3U77KJY54VTUJNIORYASOUOHWO63Q7Q',
+	// 	302941046
 	// );
-
 	// console.log(result);
-	// // const result = await getAllCommentOfOnePostTest(
-	// // 	null,
-	// // 	'1B170AE893B1FA37AAF347780F59FE274B1CE2DE4DFE8B5D4115FD69ABE4B937'
-	// // );
-	// // console.log(result);
-	// const result = await getAllCommentOfOnePostTest(
-	// 	'1B170AE893B1FA37AAF347780F59FE274B1CE2DE4DFE8B5D4115FD69ABE4B937'
-	// );
 };
 
 export { test };
