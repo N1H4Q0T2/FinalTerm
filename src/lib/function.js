@@ -434,6 +434,9 @@ const updateAccountAvatar = async (
 ) => {
 	const realData = data.slice(23);
 	const x = new Buffer(Buffer.from(realData, 'base64'));
+	if (x.length > 20000) {
+		return false;
+	}
 	const allTransaction = await getAllTransactions(account);
 	const sequence = getSequence(allTransaction, account);
 	const tx = {
@@ -623,8 +626,7 @@ const getReactionOfOnePost = async hash => {
 };
 
 // Lay nhung bai post cua account co trong page
-const getAccountPostsInPage = async (account, per_page, page) => {
-	// const total_page = await getAccountPageAvailable(account, per_page);
+const getAccountPostsInPage = async (account, per_page, page, yourAccount) => {
 	var result = [];
 	var newPage;
 	if (page === 0) {
@@ -637,6 +639,23 @@ const getAccountPostsInPage = async (account, per_page, page) => {
 				const item = transactions[i];
 				const data = Buffer.from(item.tx, 'base64');
 				const decodeData = v1.decode(data);
+				if (yourAccount === true) {
+					if (decodeData.operation === 'payment' && decodeData.account === account) {
+						const addressUsername = await getAccountUsername(
+							decodeData.params.address
+						);
+						console.log(decodeData);
+						var paymentData = {
+							type: 0,
+							text: `>>> Your has transfer ${
+								decodeData.params.amount
+							} to ${addressUsername}`,
+							hash: item.hash,
+							reactions: [],
+						};
+						thisPagePosts.push(paymentData);
+					}
+				}
 				if (decodeData.operation === 'post') {
 					try {
 						const content_base64 = Buffer.from(
@@ -658,49 +677,16 @@ const getAccountPostsInPage = async (account, per_page, page) => {
 			}
 			result = result.concat(thisPagePosts.reverse());
 			newPage = currentPage - 1;
-			if (result.length >= 5 ) {
+			if (result.length >= 5) {
 				break;
 			}
 		}
 	}
-	// if (page <= total_page) {
-	// 	for (var currentPage = page; currentPage >= 0; currentPage--) {
-	// 		var transactions = await getTransaction(account, per_page, currentPage);
-	// 		for (var i = 0; i < transactions.length; i++) {
-	// 			const item = transactions[i];
-	// 			const data = Buffer.from(item.tx, 'base64');
-	// 			const decodeData = v1.decode(data);
-	// 			if (decodeData.operation === 'post') {
-	// 				try {
-	// 					const content_base64 = Buffer.from(
-	// 						decodeData.params.content,
-	// 						'base64'
-	// 					);
-	// 					var tmp = v1.PlainTextContent.decode(content_base64);
-	// 					const reactions = await getReactionOfOnePost(item.hash);
-	// 					var realData = {
-	// 						...tmp,
-	// 						hash: item.hash,
-	// 						reaction: reactions,
-	// 					};
-	// 					result.push(realData);
-	// 				} catch (e) {
-	// 					console.log();
-	// 				}
-	// 			}
-	// 		}
-	// 		newPage = currentPage + 1;
-	// 		if (result.length !== 0) {
-	// 			break;
-	// 		}
-	// 	}
-	// } else {
-	// 	newPage = page;
-	// }
 	const data = {
 		newPosts: result,
 		newPage: newPage,
 	};
+	console.log(data);
 	return data;
 };
 

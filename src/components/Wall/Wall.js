@@ -17,21 +17,24 @@ const PostList = ({
 	onCommentPopup,
 	onReactOnPost,
 }) => {
-	const { reaction } = data;
+	const { reaction, type } = data;
 	var likeCount = 0,
 		loveCount = 0,
 		hahaCount = 0,
 		wowCount = 0,
 		sadCount = 0,
 		angryCount = 0;
-	reaction.forEach(item => {
-		if (item.reaction === 1) likeCount++;
-		if (item.reaction === 2) loveCount++;
-		if (item.reaction === 3) hahaCount++;
-		if (item.reaction === 4) wowCount++;
-		if (item.reaction === 5) sadCount++;
-		if (item.reaction === 6) angryCount++;
-	});
+	console.log(reaction);
+	if (type !== 0) {
+		reaction.forEach(item => {
+			if (item.reaction === 1) likeCount++;
+			if (item.reaction === 2) loveCount++;
+			if (item.reaction === 3) hahaCount++;
+			if (item.reaction === 4) wowCount++;
+			if (item.reaction === 5) sadCount++;
+			if (item.reaction === 6) angryCount++;
+		});
+	}
 	return (
 		<div className="Wall_Post_Container">
 			<div className="Wall_Post_div1">
@@ -46,93 +49,95 @@ const PostList = ({
 					<span className="Wall_Post_PostContent">{data.text}</span>
 				</div>
 			</div>
-			<div className="Wall_Post_div2">
-				<img
-					className="Wall_Post_Icon"
-					src={likeIcon}
-					onClick={() => {
-						const reactDatat = {
-							...data,
-							username: username,
-						};
-						onReactOnPost(reactDatat, 1);
-					}}
-				/>
-				<span className="Wall_Post_Statistic">{likeCount}</span>
-				<img
-					className="Wall_Post_Icon"
-					src={loveIcon}
-					onClick={() => {
-						const reactDatat = {
-							...data,
-							username: username,
-						};
-						onReactOnPost(reactDatat, 2);
-					}}
-				/>
-				<span className="Wall_Post_Statistic">{loveCount}</span>
-				<img
-					className="Wall_Post_Icon"
-					src={hahaIcon}
-					onClick={() => {
-						const reactDatat = {
-							...data,
-							username: username,
-						};
-						onReactOnPost(reactDatat, 3);
-					}}
-				/>
-				<span className="Wall_Post_Statistic">{hahaCount}</span>
-				<img
-					className="Wall_Post_Icon"
-					src={wowIcon}
-					onClick={() => {
-						const reactDatat = {
-							...data,
-							username: username,
-						};
-						onReactOnPost(reactDatat, 4);
-					}}
-				/>
-				<span className="Wall_Post_Statistic">{wowCount}</span>
-				<img
-					className="Wall_Post_Icon"
-					src={sadIcon}
-					onClick={() => {
-						const reactDatat = {
-							...data,
-							username: username,
-						};
-						onReactOnPost(reactDatat, 5);
-					}}
-				/>
-				<span className="Wall_Post_Statistic">{sadCount}</span>
-				<img
-					className="Wall_Post_Icon"
-					src={angryIcon}
-					onClick={() => {
-						const reactDatat = {
-							...data,
-							username: username,
-						};
-						onReactOnPost(reactDatat, 6);
-					}}
-				/>
-				<span className="Wall_Post_Statistic">{angryCount}</span>
-				<button
-					className="Wall_Post_ActionButton"
-					onClick={() => {
-						const postData = {
-							data: data,
-							avatar: avatar,
-							username: username,
-						};
-						onCommentPopup(postData);
-					}}
-				>
-					Comment
-				</button>
-			</div>
+			{type === 1 && (
+				<div className="Wall_Post_div2">
+					<img
+						className="Wall_Post_Icon"
+						src={likeIcon}
+						onClick={() => {
+							const reactDatat = {
+								...data,
+								username: username,
+							};
+							onReactOnPost(reactDatat, 1);
+						}}
+					/>
+					<span className="Wall_Post_Statistic">{likeCount}</span>
+					<img
+						className="Wall_Post_Icon"
+						src={loveIcon}
+						onClick={() => {
+							const reactDatat = {
+								...data,
+								username: username,
+							};
+							onReactOnPost(reactDatat, 2);
+						}}
+					/>
+					<span className="Wall_Post_Statistic">{loveCount}</span>
+					<img
+						className="Wall_Post_Icon"
+						src={hahaIcon}
+						onClick={() => {
+							const reactDatat = {
+								...data,
+								username: username,
+							};
+							onReactOnPost(reactDatat, 3);
+						}}
+					/>
+					<span className="Wall_Post_Statistic">{hahaCount}</span>
+					<img
+						className="Wall_Post_Icon"
+						src={wowIcon}
+						onClick={() => {
+							const reactDatat = {
+								...data,
+								username: username,
+							};
+							onReactOnPost(reactDatat, 4);
+						}}
+					/>
+					<span className="Wall_Post_Statistic">{wowCount}</span>
+					<img
+						className="Wall_Post_Icon"
+						src={sadIcon}
+						onClick={() => {
+							const reactDatat = {
+								...data,
+								username: username,
+							};
+							onReactOnPost(reactDatat, 5);
+						}}
+					/>
+					<span className="Wall_Post_Statistic">{sadCount}</span>
+					<img
+						className="Wall_Post_Icon"
+						src={angryIcon}
+						onClick={() => {
+							const reactDatat = {
+								...data,
+								username: username,
+							};
+							onReactOnPost(reactDatat, 6);
+						}}
+					/>
+					<span className="Wall_Post_Statistic">{angryCount}</span>
+					<button
+						className="Wall_Post_ActionButton"
+						onClick={() => {
+							const postData = {
+								data: data,
+								avatar: avatar,
+								username: username,
+							};
+							onCommentPopup(postData);
+						}}
+					>
+						Comment
+					</button>
+				</div>
+			)}
 			<div className="Wall_Post_Line" />
 		</div>
 	);

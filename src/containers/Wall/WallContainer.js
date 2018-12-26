@@ -149,7 +149,6 @@ class WallContainer extends React.Component {
 			const newReaction = await getReactionOfOnePost(data.hash);
 			if (this.state.mode === 1) {
 				const posts = accountPosts[0].posts;
-				console.log(posts);
 				const newPosts = posts.map(item => {
 					if (item.hash === data.hash) {
 						return {
@@ -168,7 +167,6 @@ class WallContainer extends React.Component {
 				];
 				this.props.updateAccountPosts(newData);
 			} else {
-				console.log(everyonePosts);
 				const newReaction = await getReactionOfOnePost(data.hash);
 				const newPosts = everyonePosts.map(user => {
 					const posts = user.posts.map(post => {
@@ -188,7 +186,6 @@ class WallContainer extends React.Component {
 						posts: newPosts[i],
 					};
 				});
-				console.log(newData);
 				this.props.updateEveryonePosts(newData);
 			}
 			alert('React successful');
@@ -239,13 +236,10 @@ const mapDispatchToProps = dispatch => {
 		},
 		onLoadAccountPost: async (account, _page, oldData) => {
 			const total_page = await getAccountPageAvailable(account, 50);
-
 			var page;
 			if (_page === null) page = total_page;
 			else page = _page;
-			console.log(page);
-			const result = await getAccountPostsInPage(account, 50, page);
-			console.log(result);
+			const result = await getAccountPostsInPage(account, 50, page, true);
 			if (result.newPage !== page) {
 				if (oldData === null) {
 					const data = [
@@ -254,7 +248,6 @@ const mapDispatchToProps = dispatch => {
 							currentPage: result.newPage,
 						},
 					];
-					console.log(data);
 					dispatch(update_AccountPosts(data));
 				} else {
 					var newData = oldData;
@@ -287,7 +280,6 @@ const mapDispatchToProps = dispatch => {
 						posts: accountPosts.newPosts,
 						currentPage: accountPosts.newPage,
 					};
-					console.log(accountData);
 					data.push(accountData);
 				} else {
 					var accountCurrentPage = oldData[i].currentPage;

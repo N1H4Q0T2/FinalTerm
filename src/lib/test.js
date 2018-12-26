@@ -529,6 +529,7 @@ const reactOnePost = async (
 };
 
 const test = async () => {
+//	await readAllTransactionsOfOneACcount('GAGTD65KN2ZALVJXZUBXLEXMQQYVXFWD7GV6VA3FW32DXXERTDB5F3MU');
 };
 
 export { test };
