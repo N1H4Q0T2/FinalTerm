@@ -16,6 +16,7 @@ import {
 import {
 	updateIsSubmitting,
 	updatePostAndTransferSuccess,
+	updateCommentAndReacSuccess,
 } from '../../actions/SubmitReducerActions';
 import * as hashKey from '../../config/hashKey';
 
@@ -107,6 +108,7 @@ class WallContainer extends React.Component {
 			bandwidthLimit,
 		} = this.props.UserProfileReducerData;
 		this.props.updateIsSubmitting(true);
+		this.props.updateCommentAndReacSuccess(true);
 		const hash = this.state.onePostData.data.hash;
 		const privateKeyFromStorage = localStorage.getItem(publicKey);
 		const privateKey = hashKey.decode(privateKeyFromStorage);
@@ -145,6 +147,7 @@ class WallContainer extends React.Component {
 			bandwidthLimit,
 		} = this.props.UserProfileReducerData;
 		this.props.updateIsSubmitting(true);
+		this.props.updateCommentAndReacSuccess(true);
 		const { accountPosts, everyonePosts } = this.props.WallReducerData;
 		const privateKeyFromStorage = localStorage.getItem(publicKey);
 		const privateKey = hashKey.decode(privateKeyFromStorage);
@@ -243,6 +246,9 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
 	return {
+		updateCommentAndReacSuccess: data => {
+			return dispatch(updateCommentAndReacSuccess(data));
+		},
 		updatePostAndTransferSuccess: data => {
 			return dispatch(updatePostAndTransferSuccess(data));
 		},

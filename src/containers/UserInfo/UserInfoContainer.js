@@ -8,7 +8,11 @@ import {
 	update_Balance,
 	update_Bandwidth,
 } from '../../actions/UserProfileReducer';
-import {updateIsSubmitting} from '../../actions/SubmitReducerActions';
+import {
+	updateIsSubmitting,
+	updateChangeProfileSuccess,
+	updateCommentAndReacSuccess
+} from '../../actions/SubmitReducerActions';
 import {
 	getAccountAvatar,
 	getAccountUsername,
@@ -36,6 +40,30 @@ class UserInfoContainer extends React.Component {
 		this.props.onLoadBandwidth(this.props.data.publicKey);
 	};
 
+	componentDidUpdate() {
+		if (
+			this.props.SubmitReducerData.postAndTransferSuccess === true ||
+			this.props.SubmitReducerData.followSuccess === true ||
+			this.props.SubmitReducerData.changeProfileSuccess === true ||
+			this.props.SubmitReducerData.commentAndReacSuccess === true
+		) {
+			this.props.update_Balance(0);
+			this.props.update_Bandwidth({
+				bandwidth: 0,
+				bandwidthTime: '',
+				bandwidthLimit: 0,
+			});
+			this.props.onLoadBalance(this.props.data.publicKey);
+			this.props.onLoadBandwidth(this.props.data.publicKey);
+			if(this.props.SubmitReducerData.changeProfileSuccess === true){
+				this.props.updateChangeProfileSuccess(false);
+			}
+			if(this.props.SubmitReducerData.commentAndReacSuccess === true){
+				this.props.updateCommentAndReacSuccess(false);
+			}
+		}
+	}
+
 	updateEditUsername = data => {
 		this.setState({ editUsername: data });
 	};
@@ -57,6 +85,7 @@ class UserInfoContainer extends React.Component {
 			this.props.data.publicKey
 		);
 		this.props.updateIsSubmitting(true);
+		this.props.updateChangeProfileSuccess(true);
 		const privateKey = hashKey.decode(privateKeyFromStorage);
 		if (this.state.editUsername !== '') {
 			result_username = await this.props.updateUsername(
@@ -111,12 +140,19 @@ class UserInfoContainer extends React.Component {
 const mapStateToProps = state => {
 	return {
 		data: state.UserProfileReducer,
+		SubmitReducerData: state.SubmitReducer,
 	};
 };
 
 const mapDispatchToProps = dispatch => {
 	return {
-		updateIsSubmitting: (data)=> {
+		updateCommentAndReacSuccess: data => {
+			return dispatch(updateCommentAndReacSuccess(data));
+		},
+		updateChangeProfileSuccess: data => {
+			return dispatch(updateChangeProfileSuccess(data));
+		},
+		updateIsSubmitting: data => {
 			return dispatch(updateIsSubmitting(data));
 		},
 		onEditProfileClick: () => {
@@ -175,8 +211,12 @@ const mapDispatchToProps = dispatch => {
 		update_Balance: data => {
 			dispatch(update_Balance(data));
 		},
+		update_Bandwidth: data => {
+			dispatch(update_Bandwidth(data));
+		},
 		onLoadBandwidth: async account => {
 			const data = await calculateBandwidth(account);
+			console.log(data);
 			dispatch(update_Bandwidth(data));
 		},
 		getAccountUsername: async account => {

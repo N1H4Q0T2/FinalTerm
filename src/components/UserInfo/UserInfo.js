@@ -47,18 +47,6 @@ const UserInfo = props => {
 							{props.data.bandwidth}
 						</span>
 					</div>
-					{/* <div className="userInfo_Div2">
-						<span className="UserInfo_Field">Follower: </span>
-						<span className="UserInfo_Content UserInfo_FollowerNFollowing">
-							{props.follower}
-						</span>
-					</div>
-					<div className="userInfo_Div2">
-						<span className="UserInfo_Field">Following: </span>
-						<span className="UserInfo_Content UserInfo_FollowerNFollowing">
-							{props.following}
-						</span>
-					</div> */}
 					<div className="userInfo_Div2">
 						<span
 							className="UserInfo_Cancel"
@@ -80,27 +68,17 @@ const UserInfo = props => {
 					<div className="userInfo_Div2">
 						<span className="UserInfo_Field">Balance: </span>
 						<span className="UserInfo_Content UserInfo_FollowerNFollowing">
-							{props.data.balance} CEL
+							{props.data.balance === 0 ? 'CALCULATING ...' : `${props.data.balance} CEL`}
 						</span>
 					</div>
 					<div className="userInfo_Div2">
 						<span className="UserInfo_Field">OXYGEN: </span>
 						<span className="UserInfo_Content UserInfo_FollowerNFollowing">
-							{props.data.bandwidth}
+							{props.data.bandwidth === 0
+								? 'CALCULATING ... '
+								: props.data.bandwidth}
 						</span>
 					</div>
-					{/* <div className="userInfo_Div2">
-						<span className="UserInfo_Field">Follower: </span>
-						<span className="UserInfo_Content UserInfo_FollowerNFollowing">
-							{props.follower}
-						</span>
-					</div>
-					<div className="userInfo_Div2">
-						<span className="UserInfo_Field">Following: </span>
-						<span className="UserInfo_Content UserInfo_FollowerNFollowing">
-							{props.following}
-						</span>
-					</div> */}
 					<div className="userInfo_Div2" onClick={props.onEditProfileClick}>
 						<span className="UserInfo_EditProfile">Edit profile</span>
 					</div>
