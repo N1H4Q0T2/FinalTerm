@@ -1,12 +1,36 @@
 import React from 'react';
 import './WallStyle.css';
-import commentIcon from '../../assets/images/comment_icon.png';
-import likeIcon from '../../assets/images/like_icon.png';
-import shareIcon from '../../assets/images/share_icon.png';
-import defaultAvatar from '../../assets/images/user.png';
 import Popup from 'reactjs-popup';
+import likeIcon from '../../assets/images/like.png';
+import angryIcon from '../../assets/images/angry.png';
+import sadIcon from '../../assets/images/crying.png';
+import loveIcon from '../../assets/images/in-love.png';
+import hahaIcon from '../../assets/images/laugh.png';
+import wowIcon from '../../assets/images/shocked.png';
+import defaultAvatar from '../../assets/images/user.png';
 
-const PostList = ({ data, avatar, username, onCommentPopup }) => {
+const PostList = ({
+	data,
+	avatar,
+	username,
+	onCommentPopup,
+	onReactOnPost,
+}) => {
+	const { reaction } = data;
+	var likeCount = 0,
+		loveCount = 0,
+		hahaCount = 0,
+		wowCount = 0,
+		sadCount = 0,
+		angryCount = 0;
+	reaction.forEach(item => {
+		if (item.reaction === 1) likeCount++;
+		if (item.reaction === 2) loveCount++;
+		if (item.reaction === 3) hahaCount++;
+		if (item.reaction === 4) wowCount++;
+		if (item.reaction === 5) sadCount++;
+		if (item.reaction === 6) angryCount++;
+	});
 	return (
 		<div className="Wall_Post_Container">
 			<div className="Wall_Post_div1">
@@ -22,13 +46,54 @@ const PostList = ({ data, avatar, username, onCommentPopup }) => {
 				</div>
 			</div>
 			<div className="Wall_Post_div2">
-				{/* <img className="Wall_Post_Icon" src={likeIcon} />
-				<span className="Wall_Post_Statistic">12</span>
-				<img className="Wall_Post_Icon" src={commentIcon} />
-				<span className="Wall_Post_Statistic">2</span>
-				<img className="Wall_Post_Icon" src={shareIcon} />
-				<span className="Wall_Post_Statistic Wall_Post_Sub1">3</span> */}
-				<button className="Wall_Post_ActionButton">Like</button>
+				<img
+					className="Wall_Post_Icon"
+					src={likeIcon}
+					onClick={() => {
+						onReactOnPost(data.hash, 1);
+					}}
+				/>
+				<span className="Wall_Post_Statistic">{likeCount}</span>
+				<img
+					className="Wall_Post_Icon"
+					src={loveIcon}
+					onClick={() => {
+						onReactOnPost(data.hash, 2);
+					}}
+				/>
+				<span className="Wall_Post_Statistic">{loveCount}</span>
+				<img
+					className="Wall_Post_Icon"
+					src={hahaIcon}
+					onClick={() => {
+						onReactOnPost(data.hash, 3);
+					}}
+				/>
+				<span className="Wall_Post_Statistic">{hahaCount}</span>
+				<img
+					className="Wall_Post_Icon"
+					src={wowIcon}
+					onClick={() => {
+						onReactOnPost(data.hash, 4);
+					}}
+				/>
+				<span className="Wall_Post_Statistic">{wowCount}</span>
+				<img
+					className="Wall_Post_Icon"
+					src={sadIcon}
+					onClick={() => {
+						onReactOnPost(data.hash, 5);
+					}}
+				/>
+				<span className="Wall_Post_Statistic">{sadCount}</span>
+				<img
+					className="Wall_Post_Icon"
+					src={angryIcon}
+					onClick={() => {
+						onReactOnPost(data.hash, 6);
+					}}
+				/>
+				<span className="Wall_Post_Statistic">{angryCount}</span>
 				<button
 					className="Wall_Post_ActionButton"
 					onClick={() => {
@@ -42,7 +107,6 @@ const PostList = ({ data, avatar, username, onCommentPopup }) => {
 				>
 					Comment
 				</button>
-				<button className="Wall_Post_ActionButton">Share</button>
 			</div>
 			<div className="Wall_Post_Line" />
 		</div>
@@ -60,7 +124,9 @@ const CommentItem = ({ data, avatar, username }) => {
 					}
 				/>
 				<div className="Wall_Popup_Comment_List_div1">
-					<div className="Wall_Popup_Comment_List_Username">{username}</div>
+					<div className="Wall_Popup_Comment_List_Username">
+						{username === '' ? '--' : username}
+					</div>
 					<div className="Wall_Popup_Comment_List_Content">{data}</div>
 				</div>
 			</div>
@@ -81,6 +147,7 @@ class Wall extends React.Component {
 
 	render() {
 		let postList = [];
+		console.log(this.props.postData);
 		if (this.props.mode === 1) {
 			for (let i = 0; i < this.props.postData.length; i++) {
 				for (let j = 0; j < this.props.postData[i].posts.length; j++) {
@@ -90,6 +157,7 @@ class Wall extends React.Component {
 							avatar={this.props.avatar}
 							username={this.props.username}
 							onCommentPopup={this.props.onCommentPopup}
+							onReactOnPost={this.props.onReactOnPost}
 						/>
 					);
 					postList.push(data);
@@ -105,6 +173,7 @@ class Wall extends React.Component {
 							avatar={this.props.postData[i].avatar}
 							username={this.props.postData[i].username}
 							onCommentPopup={this.props.onCommentPopup}
+							onReactOnPost={this.props.onReactOnPost}
 						/>
 					);
 					accountPosts.push(accountPostList);
@@ -213,7 +282,14 @@ class Wall extends React.Component {
 										this.props.onUpdateCommentData(e.target.value);
 									}}
 								/>
-								<button className="Wall_Popup_Comment_Button" onClick={()=>{this.props.onCommentOnePost();}}>Comment</button>
+								<button
+									className="Wall_Popup_Comment_Button"
+									onClick={() => {
+										this.props.onCommentOnePost();
+									}}
+								>
+									Comment
+								</button>
 							</div>
 						</div>
 					)}

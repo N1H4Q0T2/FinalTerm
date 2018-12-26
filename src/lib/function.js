@@ -591,8 +591,8 @@ const getAllCommentOfOnePost = async (account, hash) => {
 		try {
 			const base64Data = Buffer.from(item.tx, 'base64');
 			const decodeData = v1.decode(base64Data);
-			const commentBase64 = Buffer.from(decodeData.params.content, 'base64');
-			const comment = PlainTextContent.decode(commentBase64);
+			const Base64 = Buffer.from(decodeData.params.content, 'base64');
+			const comment = v1.PlainTextContent.decode(Base64);
 			const accountAvatar = await getAccountAvatar(decodeData.account);
 			const accountUsername = await getAccountUsername(decodeData.account);
 			const data = {
@@ -608,6 +608,32 @@ const getAllCommentOfOnePost = async (account, hash) => {
 	return result;
 };
 
+// Lay reaction cua bai post
+const getReactionOfOnePost = async hash => {
+	const url = `${api.API_GET_ALL_COMMENT}${hash}%27%22`;
+	const response = await axios({
+		url,
+		method: 'GET',
+	});
+	var result = [];
+	if (response.data.result.total_count !== 0) {
+		response.data.result.txs.forEach(item => {
+			try {
+				const base64Data = Buffer.from(item.tx, 'base64');
+				const decodeData = v1.decode(base64Data);
+				const reactBase64 = Buffer.from(decodeData.params.content, 'base64');
+				const react = v1.ReactContent.decode(reactBase64);
+				if (react.type === 2) {
+					if (react.reaction > 0 && react.reaction < 7) result.push(react);
+				}
+			} catch (e) {
+				console.log();
+			}
+		});
+	}
+	return result;
+};
+
 // Lay nhung bai post cua account co trong page
 const getAccountPostsInPage = async (account, per_page, page) => {
 	const total_page = await getAccountPageAvailable(account, per_page);
@@ -616,7 +642,8 @@ const getAccountPostsInPage = async (account, per_page, page) => {
 	if (page <= total_page) {
 		for (var currentPage = page; currentPage <= total_page; currentPage++) {
 			var transactions = await getTransaction(account, per_page, currentPage);
-			transactions.forEach(item => {
+			for (var i = 0; i < transactions.length; i++) {
+				const item = transactions[i];
 				const data = Buffer.from(item.tx, 'base64');
 				const decodeData = v1.decode(data);
 				if (decodeData.operation === 'post') {
@@ -626,16 +653,18 @@ const getAccountPostsInPage = async (account, per_page, page) => {
 							'base64'
 						);
 						var tmp = v1.PlainTextContent.decode(content_base64);
+						const reactions = await getReactionOfOnePost(item.hash);
 						var realData = {
 							...tmp,
 							hash: item.hash,
+							reaction: reactions,
 						};
 						result.push(realData);
 					} catch (e) {
 						console.log();
 					}
 				}
-			});
+			}
 			newPage = currentPage + 1;
 			if (result.length !== 0) {
 				break;
@@ -651,6 +680,7 @@ const getAccountPostsInPage = async (account, per_page, page) => {
 	return data;
 };
 
+// Comment mot bai post
 const commentOnePost = async (
 	account,
 	privateKey,
@@ -706,9 +736,66 @@ const commentOnePost = async (
 	}
 };
 
+// React mot bai post
+const reactOnePost = async (
+	account,
+	privateKey,
+	hashCodeOfPost,
+	typeOfReaction,
+	bandwidth,
+	bandwidthTime,
+	bandwidthLimit
+) => {
+	const allTransaction = await getAllTransactions(account);
+	const sequence = getSequence(allTransaction, account);
+	const content = v1.ReactContent.encode({
+		type: 2,
+		reaction: typeOfReaction,
+	});
+	const tx = {
+		version: 1,
+		operation: 'interact',
+		account: account,
+		params: {
+			object: hashCodeOfPost,
+			content: content,
+		},
+		sequence: sequence,
+		memo: Buffer.alloc(0),
+	};
+	transaction.sign(tx, privateKey);
+	const isEnoughBandwidth = checkIfEnoughBandwidth(
+		transaction.encode(tx),
+		bandwidth,
+		bandwidthTime,
+		bandwidthLimit,
+		new Date()
+	);
+	if (isEnoughBandwidth) {
+		const txEncode = transaction.encode(tx).toString('base64');
+		return axios
+			.post('https://komodo.forest.network/', {
+				jsonrpc: '2.0',
+				id: 1,
+				method: 'broadcast_tx_commit',
+				params: [`${txEncode}`],
+			})
+			.then(res => {
+				console.log(res.data);
+				return true;
+			})
+			.catch(e => {
+				return false;
+			});
+	} else {
+		return false;
+	}
+};
+
 export {
 	postContent,
 	getFollowing,
+	reactOnePost,
 	transferMoney,
 	commentOnePost,
 	getAccountPosts,
@@ -718,6 +805,7 @@ export {
 	updateAccountAvatar,
 	updateAccountProfile,
 	followAnotherAccount,
+	getReactionOfOnePost,
 	checkIfAccountIsExits,
 	getAccountPostsInPage,
 	getAllCommentOfOnePost,

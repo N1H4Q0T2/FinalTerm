@@ -6,7 +6,9 @@ import {
 	updateEveryonePosts,
 } from '../../actions/WallReducerActions';
 import {
+	reactOnePost,
 	commentOnePost,
+	getReactionOfOnePost,
 	getAccountPostsInPage,
 	getAllCommentOfOnePost,
 } from '../../lib/function';
@@ -115,6 +117,53 @@ class WallContainer extends React.Component {
 		this.setState({ commentData: '' });
 	};
 
+	onReactOnPost = async (hash, typeOfReaction) => {
+		const {
+			publicKey,
+			privateKey,
+			bandwidth,
+			bandwidthTime,
+			bandwidthLimit,
+		} = this.props.UserProfileReducerData;
+		const { accountPosts, everyonePosts } = this.props.WallReducerData;
+		const result = await reactOnePost(
+			publicKey,
+			privateKey,
+			hash,
+			typeOfReaction,
+			bandwidth,
+			bandwidthTime,
+			bandwidthLimit
+		);
+		if (result === true) {
+			const newReaction = await getReactionOfOnePost(hash);
+			if (this.state.mode === 1) {
+				const posts = accountPosts[0].posts;
+				console.log(posts);
+				const newPosts = posts.map(item => {
+					if (item.hash === hash) {
+						return {
+							...item,
+							reaction: newReaction,
+						};
+					} else {
+						return item;
+					}
+				});
+				const newData = [
+					{
+						posts: newPosts,
+						currentPage: accountPosts[0].currentPage,
+					},
+				];
+				this.props.updateAccountPosts(newData);
+			} else console.log(everyonePosts);
+			alert('Comment successful');
+		} else {
+			alert('Comment fail');
+		}
+	};
+
 	render() {
 		const { accountPosts, everyonePosts } = this.props.WallReducerData;
 		const { avatar, userName } = this.props.UserProfileReducerData;
@@ -133,6 +182,7 @@ class WallContainer extends React.Component {
 				commentData={this.state.commentData}
 				onUpdateCommentData={this.onUpdateCommentData}
 				onCommentOnePost={this.onCommentOnePost}
+				onReactOnPost={this.onReactOnPost}
 			/>
 		);
 	}
@@ -231,6 +281,33 @@ const mapDispatchToProps = dispatch => {
 				bandwidthLimit
 			);
 			return result;
+		},
+		reactOnePost: async (
+			account,
+			privateKey,
+			hashCodeOfPost,
+			typeOfReaction,
+			bandwidth,
+			bandwidthTime,
+			bandwidthLimit
+		) => {
+			const result = await reactOnePost(
+				account,
+				privateKey,
+				hashCodeOfPost,
+				typeOfReaction,
+				bandwidth,
+				bandwidthTime,
+				bandwidthLimit
+			);
+			return result;
+		},
+		getReactionOfOnePost: async hash => {
+			const result = await getReactionOfOnePost(hash);
+			return result;
+		},
+		updateAccountPosts: data => {
+			dispatch(update_AccountPosts(data));
 		},
 	};
 };

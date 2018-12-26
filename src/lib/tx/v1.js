@@ -162,4 +162,9 @@ const Followings = vstruct([
 	},
 ]);
 
-export { encode, decode, PlainTextContent, Followings };
+const ReactContent = vstruct([
+	{ name: 'type', type: vstruct.UInt8 },
+	{ name: 'reaction', type: vstruct.UInt8 },
+]);
+
+export { encode, decode, PlainTextContent, Followings, ReactContent };

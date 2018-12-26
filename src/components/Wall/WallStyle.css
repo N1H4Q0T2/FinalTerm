@@ -34,7 +34,8 @@
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
-  margin-top: 10px;
+  align-items: center;
+  margin-top: 20px;
   margin-bottom: 20px;
 }
 
@@ -72,7 +73,7 @@
 }
 
 .Wall_Post_ActionButton {
-  margin-left: 10px;
+  margin-left: 50px;
   margin-right: 10px;
   background-color: white;
   cursor: pointer;
@@ -84,16 +85,17 @@
 }
 
 .Wall_Post_Statistic {
-  font-size: 12px;
-  font-weight: 500;
+  font-size: 15px;
+  font-weight: bolder;
   font-style: italic;
+  margin-left: 5px;
 }
 
 .Wall_Post_Icon {
-  width: 15px;
-  height: 15px;
-  margin-right: 5px;
-  margin-left: 20px;
+  width: 30px;
+  height: 30px;
+  margin-left: 50px;
+  cursor: pointer;
 }
 
 .Wall_Post_Sub1 {

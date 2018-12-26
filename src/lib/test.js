@@ -474,7 +474,7 @@ const getAllCommentOfOnePost = async (account, hash) => {
 	return result;
 };
 
-const getAllCommentOfOnePostTest = async (account, hash) => {
+const getAllCommentOfOnePostTest = async hash => {
 	const url = `${api.API_GET_ALL_COMMENT}${hash}%27%22`;
 	const response = await axios({
 		url,
@@ -485,29 +485,55 @@ const getAllCommentOfOnePostTest = async (account, hash) => {
 		try {
 			const base64Data = Buffer.from(item.tx, 'base64');
 			const decodeData = v1.decode(base64Data);
-			const commentBase64 = Buffer.from(decodeData.params.content, 'base64');
-			const comment = PlainTextContent.decode(commentBase64);
-			console.log(comment);
+			const reactBase64 = Buffer.from(decodeData.params.content, 'base64');
+			const react = v1.ReactContent.decode(reactBase64);
+			console.log(react);
 		} catch (e) {
 			console.log();
 		}
 	});
 };
 
+const reactOnePost = async (account, privateKey, hashCodeOfPost, typeOfReaction) => {
+	const allTransaction = await getAllTransactions(account);
+	const sequence = getSequence(allTransaction, account);
+	const content = v1.ReactContent.encode({
+		type: 2,
+		reaction: typeOfReaction,
+	});
+	const tx = {
+		version: 1,
+		operation: 'interact',
+		account: account,
+		params: {
+			object: hashCodeOfPost,
+			content: content,
+		},
+		sequence: sequence,
+		memo: Buffer.alloc(0),
+	};
+	transaction.sign(tx, privateKey);
+	const txEncode = '0x' + transaction.encode(tx).toString('hex');
+	const result = await commitTxToBroadcast(txEncode);
+	return result;
+};
+
 const test = async () => {
-	// const result = await commentOnePost(
+	// const result = await reactOnePost(
 	// 	key.publicKey1,
 	// 	key.privateKey1,
-	// 	'Lần đầu comment vào post của thầy',
 	// 	'1B170AE893B1FA37AAF347780F59FE274B1CE2DE4DFE8B5D4115FD69ABE4B937'
 	// );
+
 	// console.log(result);
+	// // const result = await getAllCommentOfOnePostTest(
+	// // 	null,
+	// // 	'1B170AE893B1FA37AAF347780F59FE274B1CE2DE4DFE8B5D4115FD69ABE4B937'
+	// // );
+	// // console.log(result);
 	// const result = await getAllCommentOfOnePostTest(
-	// 	null,
 	// 	'1B170AE893B1FA37AAF347780F59FE274B1CE2DE4DFE8B5D4115FD69ABE4B937'
 	// );
-	// console.log(result);
-	// const result = await readAllTransactionsOfOneACcount('GAO4J5RXQHUVVONBDQZSRTBC42E3EIK66WZA5ZSGKMFCS6UNYMZSIDBI');
 };
 
 export { test };
