@@ -12,6 +12,7 @@ import {
 	getAccountPostsInPage,
 	getAllCommentOfOnePost,
 } from '../../lib/function';
+import * as hashKey from '../../config/hashKey';
 
 class WallContainer extends React.Component {
 	constructor(props) {
@@ -85,12 +86,13 @@ class WallContainer extends React.Component {
 	onCommentOnePost = async () => {
 		const {
 			publicKey,
-			privateKey,
 			bandwidth,
 			bandwidthTime,
 			bandwidthLimit,
 		} = this.props.UserProfileReducerData;
 		const hash = this.state.onePostData.data.hash;
+		const privateKeyFromStorage = localStorage.getItem(publicKey);
+		const privateKey = hashKey.decode(privateKeyFromStorage);
 		const result = await commentOnePost(
 			publicKey,
 			privateKey,
@@ -120,12 +122,13 @@ class WallContainer extends React.Component {
 	onReactOnPost = async (data, typeOfReaction) => {
 		const {
 			publicKey,
-			privateKey,
 			bandwidth,
 			bandwidthTime,
 			bandwidthLimit,
 		} = this.props.UserProfileReducerData;
 		const { accountPosts, everyonePosts } = this.props.WallReducerData;
+		const privateKeyFromStorage = localStorage.getItem(publicKey);
+		const privateKey = hashKey.decode(privateKeyFromStorage);
 		const result = await reactOnePost(
 			publicKey,
 			privateKey,
@@ -181,9 +184,9 @@ class WallContainer extends React.Component {
 				console.log(newData);
 				this.props.updateEveryonePosts(newData);
 			}
-			alert('Comment successful');
+			alert('React successful');
 		} else {
-			alert('Comment fail');
+			alert('React fail');
 		}
 	};
 
@@ -252,7 +255,7 @@ const mapDispatchToProps = dispatch => {
 				if (oldData === null) {
 					const accountPosts = await getAccountPostsInPage(
 						addresses[i].address,
-						20,
+						50,
 						1
 					);
 					const accountData = {
@@ -266,7 +269,7 @@ const mapDispatchToProps = dispatch => {
 					const accountCurrentPage = oldData[i].currentPage;
 					const accountPosts = await getAccountPostsInPage(
 						addresses[i].address,
-						20,
+						50,
 						accountCurrentPage
 					);
 					var newData = oldData[i].posts;
@@ -334,7 +337,7 @@ const mapDispatchToProps = dispatch => {
 		},
 		updateEveryonePosts: data => {
 			dispatch(updateEveryonePosts(data));
-		}
+		},
 	};
 };
 

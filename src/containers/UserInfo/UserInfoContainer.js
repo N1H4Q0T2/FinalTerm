@@ -16,6 +16,7 @@ import {
 	updateAccountProfile,
 	calculateAccountBalance,
 } from '../../lib/function';
+import * as hashKey from '../../config/hashKey';
 
 class UserInfoContainer extends React.Component {
 	constructor(props) {
@@ -51,15 +52,21 @@ class UserInfoContainer extends React.Component {
 	saveProfile = async () => {
 		var result_username = false,
 			result_avatar = false;
+		const privateKeyFromStorage = localStorage.getItem(
+			this.props.data.publicKey
+		);
+		const privateKey = hashKey.decode(privateKeyFromStorage);
 		if (this.state.editUsername !== '') {
 			result_username = await this.props.updateUsername(
 				this.props.data.publicKey,
-				this.props.data.privateKey,
+				privateKey,
 				this.state.editUsername,
 				this.props.data.bandwidth,
 				this.props.data.bandwidthTime,
 				this.props.data.bandwidthLimit
 			);
+			if (result_username === true) alert('Update successful');
+			else alert('Update fail');
 		}
 		if (this.state.avatarBase64 !== '') {
 			result_avatar = await this.props.updateAccountAvatar(
@@ -70,11 +77,8 @@ class UserInfoContainer extends React.Component {
 				this.props.data.bandwidthTime,
 				this.props.data.bandwidthLimit
 			);
-		}
-		if (result_avatar && result_username) {
-			alert('Update successful');
-		} else if (result_avatar === false || result_username === false) {
-			alert('Update fail');
+			if (result_avatar === true) alert('Update successful');
+			else alert('Update fail');
 		}
 	};
 

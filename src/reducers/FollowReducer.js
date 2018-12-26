@@ -25,6 +25,14 @@ const FollowReducer = (state = inititalState, action) => {
 		const data = state.following.push(action.data);
 		return { ...state, following: data };
 	}
+	case 'CLEAR_ALL_DATA': {
+		return {
+			...state,
+			following: [],
+			follower: [],
+			newFollowingUser: '',
+		};
+	}
 	default:
 		return state;
 	}

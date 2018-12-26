@@ -11,7 +11,9 @@ import {
 	NETWORK_BANDWIDTH,
 } from '../config/metric';
 import base32 from 'base32.js';
+import * as hashKey from '../config/hashKey';
 const vstruct = require('varstruct');
+
 
 const PlainTextContent = vstruct([
 	{ name: 'type', type: vstruct.UInt8 },
@@ -527,11 +529,11 @@ const reactOnePost = async (
 };
 
 const test = async () => {
-	// const result = await calculateBandwidth(
-	// 	'GAXVLYJUYND6QKGHK4FGM44XK3U77KJY54VTUJNIORYASOUOHWO63Q7Q',
-	// 	302941046
-	// );
-	// console.log(result);
+	const key = Keypair.fromSecret(
+		'SDKGX6GW3YCUS34RPT3OM5UAJKHG4YINWFNO2LRGWGO5WR3LLRZSP63A'
+	);
+	console.log(hashKey.encode(key.secret()));
+	console.log(hashKey.decode(hashKey.encode(key.secret())));
 };
 
 export { test };

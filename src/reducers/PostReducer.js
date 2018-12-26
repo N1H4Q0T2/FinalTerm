@@ -12,6 +12,12 @@ const PostReducer = (state = inititalState, action) => {
 			content: action.data,
 		};
 	}
+	case 'CLEAR_ALL_DATA': {
+		return {
+			...state,
+			content: '',
+		};
+	}
 	default:
 		return state;
 	}

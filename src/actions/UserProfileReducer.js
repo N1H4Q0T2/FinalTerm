@@ -7,6 +7,7 @@ export const UPDATE_BALANCE = 'UPDATE_BALANCE';
 export const RESET_BALANCE = 'RESET_BALANCE';
 export const UPDATE_BANDWIDTH = 'UPDATE_BANDWIDTH';
 export const UPDATE_AVATAR = 'UPDATE_AVATAR';
+export const CLEAR_DATA = 'CLEAR_ALL_DATA';
 
 export const isEditing = () => ({
 	type: EDITING,
@@ -49,3 +50,9 @@ export const updateAvatar = data => ({
 	type: UPDATE_AVATAR,
 	data: data,
 });
+
+export const clearData = () => {
+	return {
+		type: CLEAR_DATA,
+	};
+};

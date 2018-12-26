@@ -12,8 +12,8 @@ import {
 
 const inititalState = {
 	isLogin: false,
-	publicKey: 'GDJXKJMBXBSRCPN6LOYYASV7U5WIG5ZHOUW7D3X5I6AVEUHFVANTLH5K',
-	privateKey: 'SDKGX6GW3YCUS34RPT3OM5UAJKHG4YINWFNO2LRGWGO5WR3LLRZSP63A',
+	publicKey: '',
+	privateKey: '',
 	avatar: '',
 	userName: '',
 	balance: 0,
@@ -79,6 +79,21 @@ const UserProfileReducer = (state = inititalState, action) => {
 		return {
 			...state,
 			balance: 0,
+		};
+	}
+	case 'CLEAR_ALL_DATA': {
+		return {
+			...state,
+			isLogin: false,
+			publicKey: '',
+			privateKey: '',
+			avatar: '',
+			userName: '',
+			balance: 0,
+			isEditing: false,
+			bandwidth: 0,
+			bandwidthTime: '',
+			bandwidthLimit: 0,
 		};
 	}
 	default:

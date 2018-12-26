@@ -4,7 +4,7 @@ import { Dashboard } from '../../components';
 import { test } from '../../lib/test';
 
 class DashboardContainer extends React.Component {
-	componentDidMount(){
+	componentDidMount() {
 		this.props.testing();
 	}
 
@@ -18,9 +18,7 @@ class DashboardContainer extends React.Component {
 }
 
 const mapStateToProps = state => {
-	return {
-		data: state.TestReducer.data,
-	};
+	return {};
 };
 
 const mapDispatchToProps = dispatch => {

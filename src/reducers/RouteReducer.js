@@ -11,6 +11,12 @@ const RouteReducer = (state = inititalState, action) => {
 			...state,
 			currentRoute: action.data,
 		};
+	case 'CLEAR_ALL_DATA': {
+		return {
+			...state,
+			currentRoute: '/',
+		};
+	}
 	default:
 		return state;
 	}

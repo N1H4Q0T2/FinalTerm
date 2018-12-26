@@ -11,6 +11,7 @@ import {
 	followAnotherAccount,
 } from '../../lib/function';
 import { updateRoute } from '../../actions/RouteReducerActions';
+import * as hashKey from '../../config/hashKey';
 
 class FollowDashboardContainer extends React.Component {
 	constructor(props) {
@@ -35,11 +36,12 @@ class FollowDashboardContainer extends React.Component {
 		const { following, newFollowingUser } = this.props.FollowReducerData;
 		const {
 			publicKey,
-			privateKey,
 			bandwidth,
 			bandwidthTime,
 			bandwidthLimit,
 		} = this.props.accountReducerData;
+		const privateKeyFromStorage = localStorage.getItem(publicKey);
+		const privateKey = hashKey.decode(privateKeyFromStorage);
 		const result = await this.props.followAnotherAccount(
 			newFollowingUser,
 			following,

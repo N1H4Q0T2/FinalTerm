@@ -22,6 +22,13 @@ const WallReducer = (state = inititalState, action) => {
 			everyonePosts: action.data,
 		};
 	}
+	case 'CLEAR_ALL_DATA': {
+		return {
+			...state,
+			accountPosts: [],
+			everyonePosts: [],
+		};
+	}
 	default:
 		return state;
 	}

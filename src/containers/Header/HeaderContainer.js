@@ -46,12 +46,13 @@ class HeaderContainer extends React.Component {
 	};
 
 	onLogOut = () => {
-		this.props.reset_Balance();
+		localStorage.clear();
+		this.props.resetAllState();
 		this.props.history.push({
 			pathname: '/',
 		});
-		this.props.updateRoute('/');
-		localStorage.setItem('currentRoute', '/');
+		//this.props.updateRoute('/');
+		//localStorage.setItem('currentRoute', '/');
 	};
 
 	render() {
@@ -84,6 +85,11 @@ const mapDispatchToProps = dispatch => {
 		},
 		reset_Balance: () => {
 			return dispatch(reset_Balance());
+		},
+		resetAllState: () => {
+			return dispatch({
+				type: 'CLEAR_ALL_DATA',
+			});
 		},
 	};
 };

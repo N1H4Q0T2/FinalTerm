@@ -8,7 +8,7 @@ import {
 const inititalState = {
 	submitSuccess: 0,
 	amount: 0,
-	address: 'GAG2MLRZWL673MR6JZDWDERRLCTFG7LEKNI42R3S2LQWAPBDU26TJEED',
+	address: '',
 };
 
 const RouteReducer = (state = inititalState, action) => {
@@ -34,6 +34,14 @@ const RouteReducer = (state = inititalState, action) => {
 			...state,
 			submitSuccess: action.data,
 		};
+	case 'CLEAR_ALL_DATA': {
+		return {
+			...state,
+			submitSuccess: 0,
+			amount: 0,
+			address: '',
+		};
+	}
 	default:
 		return state;
 	}

@@ -7,14 +7,14 @@ const Login = props => {
 		<div className="Login_Container">
 			<div className="Login_Window">
 				<p className="Login_title">FOREST NETWORK</p>
-				<div className="Login_div1">
+				{/* <div className="Login_div1">
 					<p className="Login_Field">Public key </p>
 					<input
 						className="Login_input"
 						value={props.publicKey}
 						onChange={e => props.update_PublicKey(e.target.value)}
 					/>
-				</div>
+				</div> */}
 				<div className="Login_div1">
 					<p className="Login_Field">Private key</p>
 					<input

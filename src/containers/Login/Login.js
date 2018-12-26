@@ -1,5 +1,7 @@
 import React from 'react';
 import axios from 'axios';
+import { Keypair } from 'stellar-base';
+import * as hashKey from '../../config/hashKey';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Login from '../../components/Login/Login';
@@ -12,15 +14,28 @@ import {
 import { updateRoute } from '../../actions/RouteReducerActions';
 
 class LoginContainer extends React.Component {
-	componentDidMount(){
+	componentDidMount() {
 		localStorage.setItem('currentRoute', '/');
 	}
 
 	onLogin = () => {
-		this.props.history.push({
-			pathname: '/dashboard',
-		});
-		this.props.updateRoute('/dashboard');
+		try {
+			const key = Keypair.fromSecret(this.props.privateKey);
+			const publicKeyFromSerect = key.publicKey();
+			const privateKeyFromStorage = localStorage.getItem(publicKeyFromSerect);
+			if (privateKeyFromStorage === null) {
+				const hashPrivateKey = hashKey.encode(this.props.privateKey);
+				localStorage.setItem(publicKeyFromSerect, hashPrivateKey);
+			}
+			this.props.update_PublicKey(publicKeyFromSerect);
+			this.props.update_PrivateKey('');
+			this.props.history.push({
+				pathname: '/dashboard',
+			});
+			this.props.updateRoute('/dashboard');
+		} catch (e) {
+			alert('Login Failed. Please try again');
+		}
 	};
 
 	render() {
@@ -37,6 +52,7 @@ class LoginContainer extends React.Component {
 }
 
 const mapStateToProps = state => {
+	console.log(state);
 	return {
 		publicKey: state.UserProfileReducer.publicKey,
 		privateKey: state.UserProfileReducer.privateKey,

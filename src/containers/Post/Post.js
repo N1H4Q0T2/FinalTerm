@@ -5,13 +5,16 @@ import { withRouter } from 'react-router-dom';
 import Post from '../../components/Post/Post';
 import { update_Content } from '../../actions/PostReducerActions';
 import { postContent } from '../../lib/function';
+import * as hashKey from '../../config/hashKey';
 
 class PostContainer extends React.Component {
 	onPost = async () => {
+		const privateKeyFromStorage = localStorage.getItem(this.props.data.publicKey);
+		const privateKey = hashKey.decode(privateKeyFromStorage);
 		if (this.props.content !== '') {
 			const result = await this.props.onPost(
 				this.props.data.publicKey,
-				this.props.data.privateKey,
+				privateKey,
 				this.props.content,
 				this.props.data.bandwidth,
 				this.props.data.bandwidthTime,
@@ -19,7 +22,6 @@ class PostContainer extends React.Component {
 			);
 			if (result === true) {
 				alert('Post successful');
-				alert('Transfer successful');
 				this.props.history.push({
 					pathname: '/dashboard',
 				});
