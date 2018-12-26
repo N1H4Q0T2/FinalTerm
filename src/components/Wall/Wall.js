@@ -189,7 +189,7 @@ class Wall extends React.Component {
 											? defaultAvatar
 											: `data:image/jpeg;base64,${
 												this.props.onePostData.avatar
-											}`
+											  }`
 									}
 								/>
 								<div className="Wall_Popup_div2">
@@ -206,8 +206,14 @@ class Wall extends React.Component {
 								<ul>{commentList}</ul>
 							</div>
 							<div className="Wall_Popup_Comment_Container">
-								<textarea className="Wall_Popup_Comment" />
-								<button className="Wall_Popup_Comment_Button">Comment</button>
+								<textarea
+									className="Wall_Popup_Comment"
+									value={this.props.commentData}
+									onChange={e => {
+										this.props.onUpdateCommentData(e.target.value);
+									}}
+								/>
+								<button className="Wall_Popup_Comment_Button" onClick={()=>{this.props.onCommentOnePost();}}>Comment</button>
 							</div>
 						</div>
 					)}

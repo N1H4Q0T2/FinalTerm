@@ -651,10 +651,66 @@ const getAccountPostsInPage = async (account, per_page, page) => {
 	return data;
 };
 
+const commentOnePost = async (
+	account,
+	privateKey,
+	data,
+	hashCodeOfPost,
+	bandwidth,
+	bandwidthTime,
+	bandwidthLimit
+) => {
+	const allTransaction = await getAllTransactions(account);
+	const sequence = getSequence(allTransaction, account);
+	const content = PlainTextContent.encode({
+		type: 1,
+		text: data,
+	});
+	const tx = {
+		version: 1,
+		operation: 'interact',
+		account: account,
+		params: {
+			object: hashCodeOfPost,
+			content: content,
+		},
+		sequence: sequence,
+		memo: Buffer.alloc(0),
+	};
+	transaction.sign(tx, privateKey);
+	const isEnoughBandwidth = checkIfEnoughBandwidth(
+		transaction.encode(tx),
+		bandwidth,
+		bandwidthTime,
+		bandwidthLimit,
+		new Date()
+	);
+	if (isEnoughBandwidth) {
+		const txEncode = transaction.encode(tx).toString('base64');
+		return axios
+			.post('https://komodo.forest.network/', {
+				jsonrpc: '2.0',
+				id: 1,
+				method: 'broadcast_tx_commit',
+				params: [`${txEncode}`],
+			})
+			.then(res => {
+				console.log(res.data);
+				return true;
+			})
+			.catch(e => {
+				return false;
+			});
+	} else {
+		return false;
+	}
+};
+
 export {
 	postContent,
 	getFollowing,
 	transferMoney,
+	commentOnePost,
 	getAccountPosts,
 	getAccountAvatar,
 	calculateBandwidth,

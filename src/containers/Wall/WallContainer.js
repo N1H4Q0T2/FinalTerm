@@ -6,6 +6,7 @@ import {
 	updateEveryonePosts,
 } from '../../actions/WallReducerActions';
 import {
+	commentOnePost,
 	getAccountPostsInPage,
 	getAllCommentOfOnePost,
 } from '../../lib/function';
@@ -18,6 +19,7 @@ class WallContainer extends React.Component {
 			hasMore: true,
 			openCommentPopup: false,
 			onePostData: null,
+			commentData: '',
 		};
 	}
 	componentDidMount() {
@@ -57,6 +59,10 @@ class WallContainer extends React.Component {
 		}
 	};
 
+	onUpdateCommentData = data => {
+		this.setState({ commentData: data });
+	};
+
 	onCommentPopup = async data => {
 		const { publicKey } = this.props.UserProfileReducerData;
 		if (data !== null && this.state.openCommentPopup === false) {
@@ -68,11 +74,45 @@ class WallContainer extends React.Component {
 				...data,
 				comments: result,
 			};
-			console.log(newData);
 			this.setState({ onePostData: newData });
 		}
 		if (data === null) this.setState({ openCommentPopup: false });
 		else this.setState({ openCommentPopup: true });
+	};
+
+	onCommentOnePost = async () => {
+		const {
+			publicKey,
+			privateKey,
+			bandwidth,
+			bandwidthTime,
+			bandwidthLimit,
+		} = this.props.UserProfileReducerData;
+		const hash = this.state.onePostData.data.hash;
+		const result = await commentOnePost(
+			publicKey,
+			privateKey,
+			this.state.commentData,
+			hash,
+			bandwidth,
+			bandwidthTime,
+			bandwidthLimit
+		);
+		if (result === true) {
+			const result = await this.props.getAllCommentOfOnePost(
+				publicKey,
+				this.state.onePostData.data.hash
+			);
+			const newData = {
+				...this.state.onePostData,
+				comments: result,
+			};
+			this.setState({ onePostData: newData });
+			alert('Comment successful');
+		} else {
+			alert('Comment fail');
+		}
+		this.setState({ commentData: '' });
 	};
 
 	render() {
@@ -90,6 +130,9 @@ class WallContainer extends React.Component {
 				openCommentPopup={this.state.openCommentPopup}
 				onCommentPopup={this.onCommentPopup}
 				onePostData={this.state.onePostData}
+				commentData={this.state.commentData}
+				onUpdateCommentData={this.onUpdateCommentData}
+				onCommentOnePost={this.onCommentOnePost}
 			/>
 		);
 	}
@@ -167,6 +210,26 @@ const mapDispatchToProps = dispatch => {
 		},
 		getAllCommentOfOnePost: async (account, hash) => {
 			const result = await getAllCommentOfOnePost(account, hash);
+			return result;
+		},
+		commentOnePost: async (
+			account,
+			privateKey,
+			data,
+			hashCodeOfPost,
+			bandwidth,
+			bandwidthTime,
+			bandwidthLimit
+		) => {
+			const result = await commentOnePost(
+				account,
+				privateKey,
+				data,
+				hashCodeOfPost,
+				bandwidth,
+				bandwidthTime,
+				bandwidthLimit
+			);
 			return result;
 		},
 	};
