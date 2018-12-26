@@ -4,17 +4,23 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import Post from '../../components/Post/Post';
 import { update_Content } from '../../actions/PostReducerActions';
-import {updateIsSubmitting} from '../../actions/SubmitReducerActions';
+import { updateIsSubmitting, updatePostAndTransferSuccess } from '../../actions/SubmitReducerActions';
+import { update_AccountPosts } from '../../actions/WallReducerActions';
 import { postContent } from '../../lib/function';
 import * as hashKey from '../../config/hashKey';
+import { updateRoute } from '../../actions/RouteReducerActions';
 
 class PostContainer extends React.Component {
 	onPost = async () => {
 		this.props.history.push({
 			pathname: '/dashboard',
 		});
+		this.props.updateRoute('/dashboard');
+		localStorage.setItem('currentRoute', '/dashboard');
 		this.props.updateIsSubmitting(true);
-		const privateKeyFromStorage = localStorage.getItem(this.props.data.publicKey);
+		const privateKeyFromStorage = localStorage.getItem(
+			this.props.data.publicKey
+		);
 		const privateKey = hashKey.decode(privateKeyFromStorage);
 		if (this.props.content !== '') {
 			const result = await this.props.onPost(
@@ -27,6 +33,7 @@ class PostContainer extends React.Component {
 			);
 			if (result === true) {
 				this.props.updateIsSubmitting(false);
+				this.props.updatePostAndTransferSuccess(true);
 				alert('Post successful');
 			} else {
 				this.props.updateIsSubmitting(false);
@@ -57,7 +64,16 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
 	return {
-		updateIsSubmitting: (data)=> {
+		updateRoute: input => {
+			return dispatch(updateRoute(input));
+		},
+		updatePostAndTransferSuccess: data => {
+			return dispatch(updatePostAndTransferSuccess(data));
+		},
+		update_AccountPosts: data => {
+			return dispatch(update_AccountPosts(data));
+		},
+		updateIsSubmitting: data => {
 			return dispatch(updateIsSubmitting(data));
 		},
 		update_Content: data => {

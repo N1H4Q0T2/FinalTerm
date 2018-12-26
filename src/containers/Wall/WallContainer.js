@@ -13,7 +13,10 @@ import {
 	getAllCommentOfOnePost,
 	getAccountPageAvailable,
 } from '../../lib/function';
-import { updateIsSubmitting } from '../../actions/SubmitReducerActions';
+import {
+	updateIsSubmitting,
+	updatePostAndTransferSuccess,
+} from '../../actions/SubmitReducerActions';
 import * as hashKey from '../../config/hashKey';
 
 class WallContainer extends React.Component {
@@ -30,6 +33,15 @@ class WallContainer extends React.Component {
 	componentDidMount() {
 		const { publicKey } = this.props.UserProfileReducerData;
 		this.props.onLoadAccountPost(publicKey, null, null);
+	}
+
+	componentDidUpdate() {
+		if (this.props.SubmitReducerData.postAndTransferSuccess === true) {
+			this.props.update_AccountPosts([]);
+			const { publicKey } = this.props.UserProfileReducerData;
+			this.props.onLoadAccountPost(publicKey, null, null);
+			this.props.updatePostAndTransferSuccess(false);
+		}
 	}
 
 	onLoadMoreData = async () => {
@@ -231,6 +243,12 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
 	return {
+		updatePostAndTransferSuccess: data => {
+			return dispatch(updatePostAndTransferSuccess(data));
+		},
+		update_AccountPosts: data => {
+			return dispatch(update_AccountPosts(data));
+		},
 		updateIsSubmitting: data => {
 			return dispatch(updateIsSubmitting(data));
 		},
