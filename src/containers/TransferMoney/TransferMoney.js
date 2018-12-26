@@ -8,15 +8,18 @@ import {
 	submitTransfer,
 	updateSubmitSuccess,
 } from '../../actions/TransferReducerActions';
-import { updateIsSubmitting } from '../../actions/SubmitReducerActions';
+import { updateIsSubmitting, updatePostAndTransferSuccess } from '../../actions/SubmitReducerActions';
+import { update_AccountPosts } from '../../actions/WallReducerActions';
 import { transferMoney } from '../../lib/function';
 import * as hashKey from '../../config/hashKey';
+import { updateRoute } from '../../actions/RouteReducerActions';
 
 class TransferMoneyContainer extends React.Component {
 	submitTransfer = async () => {
 		this.props.history.push({
 			pathname: '/dashboard',
 		});
+		this.props.updateRoute('/dashboard');
 		this.props.updateIsSubmitting(true);
 		const privateKeyFromStorage = localStorage.getItem(this.props.publicKey);
 		const privateKey = hashKey.decode(privateKeyFromStorage);
@@ -32,6 +35,7 @@ class TransferMoneyContainer extends React.Component {
 			);
 			if (result === true) {
 				this.props.updateIsSubmitting(false);
+				this.props.updatePostAndTransferSuccess(true);
 				alert('Transfer successful');
 			} else {
 				this.props.updateIsSubmitting(false);
@@ -69,6 +73,15 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
 	return {
+		updateRoute: input => {
+			return dispatch(updateRoute(input));
+		},
+		updatePostAndTransferSuccess: data => {
+			return dispatch(updatePostAndTransferSuccess(data));
+		},
+		update_AccountPosts: data => {
+			return dispatch(update_AccountPosts(data));
+		},
 		updateIsSubmitting: data => {
 			return dispatch(updateIsSubmitting(data));
 		},
