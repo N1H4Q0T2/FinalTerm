@@ -48,11 +48,6 @@ class UserInfoContainer extends React.Component {
 			this.props.SubmitReducerData.commentAndReacSuccess === true
 		) {
 			this.props.update_Balance(0);
-			this.props.update_Bandwidth({
-				bandwidth: 0,
-				bandwidthTime: '',
-				bandwidthLimit: 0,
-			});
 			this.props.onLoadBalance(this.props.data.publicKey);
 			this.props.onLoadBandwidth(this.props.data.publicKey);
 			if(this.props.SubmitReducerData.changeProfileSuccess === true){
