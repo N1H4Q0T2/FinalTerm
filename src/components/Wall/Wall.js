@@ -50,7 +50,11 @@ const PostList = ({
 					className="Wall_Post_Icon"
 					src={likeIcon}
 					onClick={() => {
-						onReactOnPost(data.hash, 1);
+						const reactDatat = {
+							...data,
+							username: username,
+						};
+						onReactOnPost(reactDatat, 1);
 					}}
 				/>
 				<span className="Wall_Post_Statistic">{likeCount}</span>
@@ -58,7 +62,11 @@ const PostList = ({
 					className="Wall_Post_Icon"
 					src={loveIcon}
 					onClick={() => {
-						onReactOnPost(data.hash, 2);
+						const reactDatat = {
+							...data,
+							username: username,
+						};
+						onReactOnPost(reactDatat, 2);
 					}}
 				/>
 				<span className="Wall_Post_Statistic">{loveCount}</span>
@@ -66,7 +74,11 @@ const PostList = ({
 					className="Wall_Post_Icon"
 					src={hahaIcon}
 					onClick={() => {
-						onReactOnPost(data.hash, 3);
+						const reactDatat = {
+							...data,
+							username: username,
+						};
+						onReactOnPost(reactDatat, 3);
 					}}
 				/>
 				<span className="Wall_Post_Statistic">{hahaCount}</span>
@@ -74,7 +86,11 @@ const PostList = ({
 					className="Wall_Post_Icon"
 					src={wowIcon}
 					onClick={() => {
-						onReactOnPost(data.hash, 4);
+						const reactDatat = {
+							...data,
+							username: username,
+						};
+						onReactOnPost(reactDatat, 4);
 					}}
 				/>
 				<span className="Wall_Post_Statistic">{wowCount}</span>
@@ -82,7 +98,11 @@ const PostList = ({
 					className="Wall_Post_Icon"
 					src={sadIcon}
 					onClick={() => {
-						onReactOnPost(data.hash, 5);
+						const reactDatat = {
+							...data,
+							username: username,
+						};
+						onReactOnPost(reactDatat, 5);
 					}}
 				/>
 				<span className="Wall_Post_Statistic">{sadCount}</span>
@@ -90,7 +110,11 @@ const PostList = ({
 					className="Wall_Post_Icon"
 					src={angryIcon}
 					onClick={() => {
-						onReactOnPost(data.hash, 6);
+						const reactDatat = {
+							...data,
+							username: username,
+						};
+						onReactOnPost(reactDatat, 6);
 					}}
 				/>
 				<span className="Wall_Post_Statistic">{angryCount}</span>
@@ -139,7 +163,7 @@ class Wall extends React.Component {
 	handleScroll = () => {
 		if (
 			this.scroller &&
-			this.scroller.scrollTop === this.scroller.scrollHeight - 760
+			this.scroller.scrollTop === this.scroller.scrollHeight - 750
 		) {
 			this.props.onLoadMoreData();
 		}

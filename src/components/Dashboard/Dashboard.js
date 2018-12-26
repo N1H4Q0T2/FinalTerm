@@ -10,8 +10,6 @@ const Dashboard = props => {
 			<UserInfo follower={follower} following={following} />
 			<Wall />
 			<div>
-				{/*FOLLOWER*/}
-				<Follow title={'Follower'} tmp={follower} />
 				{/*FOLLOWING*/}
 				<Follow title={'Following'} tmp={following} />
 			</div>

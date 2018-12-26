@@ -117,7 +117,7 @@ class WallContainer extends React.Component {
 		this.setState({ commentData: '' });
 	};
 
-	onReactOnPost = async (hash, typeOfReaction) => {
+	onReactOnPost = async (data, typeOfReaction) => {
 		const {
 			publicKey,
 			privateKey,
@@ -129,19 +129,19 @@ class WallContainer extends React.Component {
 		const result = await reactOnePost(
 			publicKey,
 			privateKey,
-			hash,
+			data.hash,
 			typeOfReaction,
 			bandwidth,
 			bandwidthTime,
 			bandwidthLimit
 		);
 		if (result === true) {
-			const newReaction = await getReactionOfOnePost(hash);
+			const newReaction = await getReactionOfOnePost(data.hash);
 			if (this.state.mode === 1) {
 				const posts = accountPosts[0].posts;
 				console.log(posts);
 				const newPosts = posts.map(item => {
-					if (item.hash === hash) {
+					if (item.hash === data.hash) {
 						return {
 							...item,
 							reaction: newReaction,
@@ -157,7 +157,30 @@ class WallContainer extends React.Component {
 					},
 				];
 				this.props.updateAccountPosts(newData);
-			} else console.log(everyonePosts);
+			} else {
+				console.log(everyonePosts);
+				const newReaction = await getReactionOfOnePost(data.hash);
+				const newPosts = everyonePosts.map(user => {
+					const posts = user.posts.map(post => {
+						if (post.hash === data.hash) {
+							return { ...post, reaction: newReaction };
+						} else {
+							return post;
+						}
+					});
+					return posts;
+				});
+				var i = -1;
+				const newData = everyonePosts.map(item => {
+					i++;
+					return {
+						...item,
+						posts: newPosts[i],
+					};
+				});
+				console.log(newData);
+				this.props.updateEveryonePosts(newData);
+			}
 			alert('Comment successful');
 		} else {
 			alert('Comment fail');
@@ -309,6 +332,9 @@ const mapDispatchToProps = dispatch => {
 		updateAccountPosts: data => {
 			dispatch(update_AccountPosts(data));
 		},
+		updateEveryonePosts: data => {
+			dispatch(updateEveryonePosts(data));
+		}
 	};
 };
 

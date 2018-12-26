@@ -228,26 +228,6 @@ const checkIfEnoughBandwidth = (
 	if(bandwidth<txSize)
 		return false;
 	else return true;
-	// const currentTime = currentTxTime;
-	// let diff = BANDWIDTH_PERIOD;
-	// if (
-	// 	moment(currentTime).unix() - moment(bandwidthTime).unix() <
-	// 	BANDWIDTH_PERIOD
-	// ) {
-	// 	diff = moment(currentTime).unix() - moment(bandwidthTime).unix();
-	// }
-	// const bandwidthConsume = Math.ceil(
-	// 	Math.max(0, (BANDWIDTH_PERIOD - diff) / BANDWIDTH_PERIOD) * bandwidth +
-	// 		txSize
-	// );
-	// console.log(txSize);
-	// console.log(bandwidth);
-	// console.log(bandwidthTime);
-	// console.log(currentTxTime);
-	// console.log(bandwidthLimit);
-	// console.log(diff);
-	// console.log(Math.max(0, (BANDWIDTH_PERIOD - diff) / BANDWIDTH_PERIOD));
-	// if (bandwidthLimit - bandwidthConsume <= 0) return false;
 };
 
 // Chuyen khoan cho account khac
