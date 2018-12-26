@@ -640,20 +640,37 @@ const getAccountPostsInPage = async (account, per_page, page, yourAccount) => {
 				const data = Buffer.from(item.tx, 'base64');
 				const decodeData = v1.decode(data);
 				if (yourAccount === true) {
-					if (decodeData.operation === 'payment' && decodeData.account === account) {
-						const addressUsername = await getAccountUsername(
-							decodeData.params.address
-						);
-						console.log(decodeData);
-						var paymentData = {
-							type: 0,
-							text: `>>> Your has transfer ${
-								decodeData.params.amount
-							} to ${addressUsername}`,
-							hash: item.hash,
-							reactions: [],
-						};
-						thisPagePosts.push(paymentData);
+					if (decodeData.operation === 'payment') {
+						if(decodeData.account === account){
+							const addressUsername = await getAccountUsername(
+								decodeData.params.address
+							);
+							console.log(decodeData);
+							var sendData = {
+								type: 0,
+								text: `>>> Your has transfer ${
+									decodeData.params.amount
+								} to ${addressUsername}`,
+								hash: item.hash,
+								reactions: [],
+							};
+							thisPagePosts.push(sendData);
+						}
+						if(decodeData.params.address === account){
+							const addressUsername = await getAccountUsername(
+								decodeData.account
+							);
+							console.log(decodeData);
+							var recieveData = {
+								type: 0,
+								text: `>>> ${addressUsername} has transfer ${
+									decodeData.params.amount
+								} to you`,
+								hash: item.hash,
+								reactions: [],
+							};
+							thisPagePosts.push(recieveData);
+						}
 					}
 				}
 				if (decodeData.operation === 'post') {
