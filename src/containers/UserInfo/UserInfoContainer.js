@@ -96,8 +96,8 @@ class UserInfoContainer extends React.Component {
 				this.props.data.bandwidthTime,
 				this.props.data.bandwidthLimit
 			);
-			if (result_username === true) alert('Update successful');
-			else alert('Update fail');
+			if (result_username === true) alert('Update username successful');
+			else alert('Update username fail');
 		}
 		if (this.state.avatarBase64 !== '') {
 			result_avatar = await this.props.updateAccountAvatar(
@@ -108,14 +108,14 @@ class UserInfoContainer extends React.Component {
 				this.props.data.bandwidthTime,
 				this.props.data.bandwidthLimit
 			);
-			if (result_avatar === true) alert('Update successful');
-			else alert('Update fail');
+			if (result_avatar === true) alert('Update avatar successful');
+			else alert('Update avatar fail');
 		}
 		this.props.updateIsSubmitting(false);
 	};
 
 	onEditProfileClick = () => {
-		this.setState({ editUsername: '', editAvatar: '' });
+		this.setState({ editUsername: '', editAvatar: '', avatarBase64: '' });
 		this.props.onEditProfileClick();
 	};
 

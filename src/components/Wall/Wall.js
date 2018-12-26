@@ -245,15 +245,17 @@ class Wall extends React.Component {
 				>
 					EVERYONE POST
 				</button>
-				<button
-					className="Wall_Button"
-					style={{ marginLeft: 20 }}
-					onClick={() => {
-						alert('REFRESHING');
-					}}
-				>
-					REFRESH
-				</button>
+				{this.props.mode === 2 && (
+					<button
+						className="Wall_Button"
+						style={{ marginLeft: 20, width: 360 }}
+						onClick={() => {
+							this.props.onRefreshEP();
+						}}
+					>
+						REFRESH EVERYONE POST
+					</button>
+				)}
 				<div className="Wall_Container">
 					{this.props.postData.length === 0 ? (
 						<p className="Wall_Loading">LOADING! PLEASE WAIT</p>

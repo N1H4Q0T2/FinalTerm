@@ -29,6 +29,7 @@ class WallContainer extends React.Component {
 			openCommentPopup: false,
 			onePostData: null,
 			commentData: '',
+			refeshing: false,
 		};
 	}
 	componentDidMount() {
@@ -67,7 +68,7 @@ class WallContainer extends React.Component {
 			if (following.length === 0) {
 				alert('Please wait for following list is loaded.');
 			} else {
-				if (everyonePosts.length === 0) {
+				if (everyonePosts.length === 0 && this.state.refeshing === false) {
 					this.props.onLoadEveryonePost(following, null);
 				}
 				this.setState({ mode: mode });
@@ -210,6 +211,14 @@ class WallContainer extends React.Component {
 		this.props.updateIsSubmitting(false);
 	};
 
+	onRefreshEP = async () => {
+		const { following } = this.props.FollowReducerData;
+		this.setState({ refeshing: true});
+		this.props.updateEveryonePosts([]);
+		this.props.onLoadEveryonePost(following, null);
+		this.setState({ refeshing: false});
+	};
+
 	render() {
 		const { accountPosts, everyonePosts } = this.props.WallReducerData;
 		const { avatar, userName } = this.props.UserProfileReducerData;
@@ -230,6 +239,8 @@ class WallContainer extends React.Component {
 				onCommentOnePost={this.onCommentOnePost}
 				onReactOnPost={this.onReactOnPost}
 				isSubmitting={this.props.SubmitReducerData.isSubmitting}
+				onRefreshEP={this.onRefreshEP}
+				refeshing={this.state.refeshing}
 			/>
 		);
 	}
