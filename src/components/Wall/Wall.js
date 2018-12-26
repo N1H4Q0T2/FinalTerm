@@ -8,6 +8,7 @@ import loveIcon from '../../assets/images/in-love.png';
 import hahaIcon from '../../assets/images/laugh.png';
 import wowIcon from '../../assets/images/shocked.png';
 import defaultAvatar from '../../assets/images/user.png';
+import { Submit } from '../../containers';
 
 const PostList = ({
 	data,
@@ -208,14 +209,16 @@ class Wall extends React.Component {
 		if (this.props.openCommentPopup) {
 			for (let i = 0; i < this.props.onePostData.comments.length; i++) {
 				const item = this.props.onePostData.comments[i];
-				const data = (
-					<CommentItem
-						data={item.comment.text}
-						avatar={item.avatar}
-						username={item.username}
-					/>
-				);
-				commentList.push(data);
+				if (item.comment.text.length >= 1) {
+					const data = (
+						<CommentItem
+							data={item.comment.text}
+							avatar={item.avatar}
+							username={item.username}
+						/>
+					);
+					commentList.push(data);
+				}
 			}
 		}
 		return (
@@ -302,7 +305,9 @@ class Wall extends React.Component {
 									className="Wall_Popup_Comment"
 									value={this.props.commentData}
 									onChange={e => {
-										this.props.onUpdateCommentData(e.target.value);
+										if (e.target.value !== '' && e.target.value !== ' ') {
+											this.props.onUpdateCommentData(e.target.value);
+										}
 									}}
 								/>
 								<button
@@ -314,6 +319,13 @@ class Wall extends React.Component {
 									Comment
 								</button>
 							</div>
+						</div>
+					)}
+					{this.props.isSubmitting && (
+						<div className="Wall_Processing_Comment_Container">
+							<span className="Wall_Processing_Comment_Content">
+								PROCESSING...
+							</span>
 						</div>
 					)}
 				</Popup>

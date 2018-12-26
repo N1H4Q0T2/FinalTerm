@@ -529,11 +529,6 @@ const reactOnePost = async (
 };
 
 const test = async () => {
-	const key = Keypair.fromSecret(
-		'SDKGX6GW3YCUS34RPT3OM5UAJKHG4YINWFNO2LRGWGO5WR3LLRZSP63A'
-	);
-	console.log(hashKey.encode(key.secret()));
-	console.log(hashKey.decode(hashKey.encode(key.secret())));
 };
 
 export { test };

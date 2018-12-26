@@ -11,6 +11,7 @@ import {
 	followAnotherAccount,
 } from '../../lib/function';
 import { updateRoute } from '../../actions/RouteReducerActions';
+import { updateIsSubmitting } from '../../actions/SubmitReducerActions';
 import * as hashKey from '../../config/hashKey';
 
 class FollowDashboardContainer extends React.Component {
@@ -31,8 +32,10 @@ class FollowDashboardContainer extends React.Component {
 			alert('Account is not available. Please try again');
 		}
 	};
-
 	handleSubmit = async () => {
+		this.props.history.push({
+			pathname: '/dashboard',
+		});
 		const { following, newFollowingUser } = this.props.FollowReducerData;
 		const {
 			publicKey,
@@ -40,6 +43,7 @@ class FollowDashboardContainer extends React.Component {
 			bandwidthTime,
 			bandwidthLimit,
 		} = this.props.accountReducerData;
+		this.props.updateIsSubmitting(true);
 		const privateKeyFromStorage = localStorage.getItem(publicKey);
 		const privateKey = hashKey.decode(privateKeyFromStorage);
 		const result = await this.props.followAnotherAccount(
@@ -51,11 +55,14 @@ class FollowDashboardContainer extends React.Component {
 			bandwidthTime,
 			bandwidthLimit
 		);
-		if (result === true) alert('Following new user successful');
-		else alert('Following new user fail');
-		this.props.history.push({
-			pathname: '/dashboard',
-		});
+		if (result === true) {
+			this.props.updateIsSubmitting(false);
+			alert('Following new user successful');
+		} else {
+			this.props.updateIsSubmitting(false);
+			alert('Following new user fail');
+		}
+
 		this.props.updateRoute('/dashboard');
 		localStorage.setItem('currentRoute', '/dashboard');
 	};
@@ -82,6 +89,9 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
 	return {
+		updateIsSubmitting: data => {
+			return dispatch(updateIsSubmitting(data));
+		},
 		updateNewFollowingUser: data => {
 			return dispatch(updateNewFollowingUser(data));
 		},

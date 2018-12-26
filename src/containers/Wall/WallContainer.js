@@ -11,7 +11,9 @@ import {
 	getReactionOfOnePost,
 	getAccountPostsInPage,
 	getAllCommentOfOnePost,
+	getAccountPageAvailable,
 } from '../../lib/function';
+import { updateIsSubmitting } from '../../actions/SubmitReducerActions';
 import * as hashKey from '../../config/hashKey';
 
 class WallContainer extends React.Component {
@@ -27,7 +29,7 @@ class WallContainer extends React.Component {
 	}
 	componentDidMount() {
 		const { publicKey } = this.props.UserProfileReducerData;
-		this.props.onLoadAccountPost(publicKey, 1, null);
+		this.props.onLoadAccountPost(publicKey, null, null);
 	}
 
 	onLoadMoreData = async () => {
@@ -69,6 +71,7 @@ class WallContainer extends React.Component {
 	onCommentPopup = async data => {
 		const { publicKey } = this.props.UserProfileReducerData;
 		if (data !== null && this.state.openCommentPopup === false) {
+			this.props.updateIsSubmitting(true);
 			const result = await this.props.getAllCommentOfOnePost(
 				publicKey,
 				data.data.hash
@@ -81,6 +84,7 @@ class WallContainer extends React.Component {
 		}
 		if (data === null) this.setState({ openCommentPopup: false });
 		else this.setState({ openCommentPopup: true });
+		this.props.updateIsSubmitting(false);
 	};
 
 	onCommentOnePost = async () => {
@@ -90,6 +94,7 @@ class WallContainer extends React.Component {
 			bandwidthTime,
 			bandwidthLimit,
 		} = this.props.UserProfileReducerData;
+		this.props.updateIsSubmitting(true);
 		const hash = this.state.onePostData.data.hash;
 		const privateKeyFromStorage = localStorage.getItem(publicKey);
 		const privateKey = hashKey.decode(privateKeyFromStorage);
@@ -116,6 +121,7 @@ class WallContainer extends React.Component {
 		} else {
 			alert('Comment fail');
 		}
+		this.props.updateIsSubmitting(false);
 		this.setState({ commentData: '' });
 	};
 
@@ -126,6 +132,7 @@ class WallContainer extends React.Component {
 			bandwidthTime,
 			bandwidthLimit,
 		} = this.props.UserProfileReducerData;
+		this.props.updateIsSubmitting(true);
 		const { accountPosts, everyonePosts } = this.props.WallReducerData;
 		const privateKeyFromStorage = localStorage.getItem(publicKey);
 		const privateKey = hashKey.decode(privateKeyFromStorage);
@@ -188,6 +195,7 @@ class WallContainer extends React.Component {
 		} else {
 			alert('React fail');
 		}
+		this.props.updateIsSubmitting(false);
 	};
 
 	render() {
@@ -209,6 +217,7 @@ class WallContainer extends React.Component {
 				onUpdateCommentData={this.onUpdateCommentData}
 				onCommentOnePost={this.onCommentOnePost}
 				onReactOnPost={this.onReactOnPost}
+				isSubmitting={this.props.SubmitReducerData.isSubmitting}
 			/>
 		);
 	}
@@ -219,13 +228,24 @@ const mapStateToProps = state => {
 		WallReducerData: state.WallReducer,
 		UserProfileReducerData: state.UserProfileReducer,
 		FollowReducerData: state.FollowReducer,
+		SubmitReducerData: state.SubmitReducer,
 	};
 };
 
 const mapDispatchToProps = dispatch => {
 	return {
-		onLoadAccountPost: async (account, page, oldData) => {
+		updateIsSubmitting: data => {
+			return dispatch(updateIsSubmitting(data));
+		},
+		onLoadAccountPost: async (account, _page, oldData) => {
+			const total_page = await getAccountPageAvailable(account, 50);
+
+			var page;
+			if (_page === null) page = total_page;
+			else page = _page;
+			console.log(page);
 			const result = await getAccountPostsInPage(account, 50, page);
+			console.log(result);
 			if (result.newPage !== page) {
 				if (oldData === null) {
 					const data = [
@@ -234,6 +254,7 @@ const mapDispatchToProps = dispatch => {
 							currentPage: result.newPage,
 						},
 					];
+					console.log(data);
 					dispatch(update_AccountPosts(data));
 				} else {
 					var newData = oldData;
@@ -244,7 +265,6 @@ const mapDispatchToProps = dispatch => {
 							currentPage: result.newPage,
 						},
 					];
-					console.log(newData);
 					dispatch(update_AccountPosts(data));
 				}
 			}
@@ -253,10 +273,14 @@ const mapDispatchToProps = dispatch => {
 			var data = [];
 			for (var i = 0; i < addresses.length; i++) {
 				if (oldData === null) {
+					const total_page = await getAccountPageAvailable(
+						addresses[i].address,
+						50
+					);
 					const accountPosts = await getAccountPostsInPage(
 						addresses[i].address,
 						50,
-						1
+						total_page
 					);
 					const accountData = {
 						...addresses[i],
@@ -266,7 +290,7 @@ const mapDispatchToProps = dispatch => {
 					console.log(accountData);
 					data.push(accountData);
 				} else {
-					const accountCurrentPage = oldData[i].currentPage;
+					var accountCurrentPage = oldData[i].currentPage;
 					const accountPosts = await getAccountPostsInPage(
 						addresses[i].address,
 						50,

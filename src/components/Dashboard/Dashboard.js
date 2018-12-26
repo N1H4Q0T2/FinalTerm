@@ -1,5 +1,5 @@
 import React from 'react';
-import { UserInfo, Wall, Follow, Comment } from '../../containers';
+import { UserInfo, Wall, Follow, Submit } from '../../containers';
 import './DashboardStyle.css';
 
 const Dashboard = props => {
@@ -13,6 +13,7 @@ const Dashboard = props => {
 				{/*FOLLOWING*/}
 				<Follow title={'Following'} tmp={following} />
 			</div>
+			{props.isSubmitting && <Submit />}
 		</div>
 	);
 };

@@ -11,14 +11,19 @@ class DashboardContainer extends React.Component {
 	render() {
 		return (
 			<div>
-				<Dashboard data={this.props.data} />
+				<Dashboard
+					data={this.props.data}
+					isSubmitting={this.props.SubmitReducerData.isSubmitting}
+				/>
 			</div>
 		);
 	}
 }
 
 const mapStateToProps = state => {
-	return {};
+	return {
+		SubmitReducerData: state.SubmitReducer,
+	};
 };
 
 const mapDispatchToProps = dispatch => {

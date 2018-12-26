@@ -4,11 +4,16 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import Post from '../../components/Post/Post';
 import { update_Content } from '../../actions/PostReducerActions';
+import {updateIsSubmitting} from '../../actions/SubmitReducerActions';
 import { postContent } from '../../lib/function';
 import * as hashKey from '../../config/hashKey';
 
 class PostContainer extends React.Component {
 	onPost = async () => {
+		this.props.history.push({
+			pathname: '/dashboard',
+		});
+		this.props.updateIsSubmitting(true);
 		const privateKeyFromStorage = localStorage.getItem(this.props.data.publicKey);
 		const privateKey = hashKey.decode(privateKeyFromStorage);
 		if (this.props.content !== '') {
@@ -21,11 +26,10 @@ class PostContainer extends React.Component {
 				this.props.data.bandwidthLimit
 			);
 			if (result === true) {
+				this.props.updateIsSubmitting(false);
 				alert('Post successful');
-				this.props.history.push({
-					pathname: '/dashboard',
-				});
 			} else {
+				this.props.updateIsSubmitting(false);
 				alert('Post fail');
 			}
 		}
@@ -53,6 +57,9 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
 	return {
+		updateIsSubmitting: (data)=> {
+			return dispatch(updateIsSubmitting(data));
+		},
 		update_Content: data => {
 			return dispatch(update_Content(data));
 		},

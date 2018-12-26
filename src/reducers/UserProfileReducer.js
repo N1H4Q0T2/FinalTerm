@@ -13,7 +13,7 @@ import {
 const inititalState = {
 	isLogin: false,
 	publicKey: '',
-	privateKey: '',
+	privateKey: 'SDKGX6GW3YCUS34RPT3OM5UAJKHG4YINWFNO2LRGWGO5WR3LLRZSP63A',
 	avatar: '',
 	userName: '',
 	balance: 0,

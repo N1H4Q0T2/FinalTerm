@@ -225,8 +225,7 @@ const checkIfEnoughBandwidth = (
 ) => {
 	const base64Data = Buffer.from(tx, 'base64');
 	const txSize = base64Data.length;
-	if(bandwidth<txSize)
-		return false;
+	if (bandwidth < txSize) return false;
 	else return true;
 };
 
@@ -625,12 +624,15 @@ const getReactionOfOnePost = async hash => {
 
 // Lay nhung bai post cua account co trong page
 const getAccountPostsInPage = async (account, per_page, page) => {
-	const total_page = await getAccountPageAvailable(account, per_page);
+	// const total_page = await getAccountPageAvailable(account, per_page);
 	var result = [];
 	var newPage;
-	if (page <= total_page) {
-		for (var currentPage = page; currentPage <= total_page; currentPage++) {
+	if (page === 0) {
+		newPage = page;
+	} else {
+		for (var currentPage = page; currentPage >= 1; currentPage--) {
 			var transactions = await getTransaction(account, per_page, currentPage);
+			var thisPagePosts = [];
 			for (var i = 0; i < transactions.length; i++) {
 				const item = transactions[i];
 				const data = Buffer.from(item.tx, 'base64');
@@ -648,20 +650,53 @@ const getAccountPostsInPage = async (account, per_page, page) => {
 							hash: item.hash,
 							reaction: reactions,
 						};
-						result.push(realData);
+						thisPagePosts.push(realData);
 					} catch (e) {
 						console.log();
 					}
 				}
 			}
-			newPage = currentPage + 1;
-			if (result.length !== 0) {
+			result = result.concat(thisPagePosts.reverse());
+			newPage = currentPage - 1;
+			if (result.length >= 5 ) {
 				break;
 			}
 		}
-	} else {
-		newPage = page;
 	}
+	// if (page <= total_page) {
+	// 	for (var currentPage = page; currentPage >= 0; currentPage--) {
+	// 		var transactions = await getTransaction(account, per_page, currentPage);
+	// 		for (var i = 0; i < transactions.length; i++) {
+	// 			const item = transactions[i];
+	// 			const data = Buffer.from(item.tx, 'base64');
+	// 			const decodeData = v1.decode(data);
+	// 			if (decodeData.operation === 'post') {
+	// 				try {
+	// 					const content_base64 = Buffer.from(
+	// 						decodeData.params.content,
+	// 						'base64'
+	// 					);
+	// 					var tmp = v1.PlainTextContent.decode(content_base64);
+	// 					const reactions = await getReactionOfOnePost(item.hash);
+	// 					var realData = {
+	// 						...tmp,
+	// 						hash: item.hash,
+	// 						reaction: reactions,
+	// 					};
+	// 					result.push(realData);
+	// 				} catch (e) {
+	// 					console.log();
+	// 				}
+	// 			}
+	// 		}
+	// 		newPage = currentPage + 1;
+	// 		if (result.length !== 0) {
+	// 			break;
+	// 		}
+	// 	}
+	// } else {
+	// 	newPage = page;
+	// }
 	const data = {
 		newPosts: result,
 		newPage: newPage,
@@ -799,4 +834,5 @@ export {
 	getAccountPostsInPage,
 	getAllCommentOfOnePost,
 	calculateAccountBalance,
+	getAccountPageAvailable,
 };

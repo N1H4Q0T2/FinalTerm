@@ -8,6 +8,7 @@ import {
 	update_Balance,
 	update_Bandwidth,
 } from '../../actions/UserProfileReducer';
+import {updateIsSubmitting} from '../../actions/SubmitReducerActions';
 import {
 	getAccountAvatar,
 	getAccountUsername,
@@ -55,6 +56,7 @@ class UserInfoContainer extends React.Component {
 		const privateKeyFromStorage = localStorage.getItem(
 			this.props.data.publicKey
 		);
+		this.props.updateIsSubmitting(true);
 		const privateKey = hashKey.decode(privateKeyFromStorage);
 		if (this.state.editUsername !== '') {
 			result_username = await this.props.updateUsername(
@@ -71,7 +73,7 @@ class UserInfoContainer extends React.Component {
 		if (this.state.avatarBase64 !== '') {
 			result_avatar = await this.props.updateAccountAvatar(
 				this.props.data.publicKey,
-				this.props.data.privateKey,
+				privateKey,
 				this.state.avatarBase64,
 				this.props.data.bandwidth,
 				this.props.data.bandwidthTime,
@@ -80,6 +82,7 @@ class UserInfoContainer extends React.Component {
 			if (result_avatar === true) alert('Update successful');
 			else alert('Update fail');
 		}
+		this.props.updateIsSubmitting(false);
 	};
 
 	onEditProfileClick = () => {
@@ -113,6 +116,9 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
 	return {
+		updateIsSubmitting: (data)=> {
+			return dispatch(updateIsSubmitting(data));
+		},
 		onEditProfileClick: () => {
 			dispatch(isEditing());
 		},

@@ -1,0 +1,21 @@
+.Submit_Container {
+  width: 500px;
+  height: 200px;
+  position: absolute;
+  align-self: center;
+  left: 36.5%;
+  top: 300px;
+  background-color: #1c313a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+  box-shadow: 0 5px 5px rgba(0, 0, 0, 0.1), 0 6px 6px rgba(0, 0, 0, 0.15);
+}
+
+.Submit_Container{
+  font-weight: bolder;
+  font-size: 30px;
+  letter-spacing: 4px;
+  color: white
+}

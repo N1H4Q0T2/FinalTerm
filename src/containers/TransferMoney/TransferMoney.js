@@ -8,11 +8,16 @@ import {
 	submitTransfer,
 	updateSubmitSuccess,
 } from '../../actions/TransferReducerActions';
+import { updateIsSubmitting } from '../../actions/SubmitReducerActions';
 import { transferMoney } from '../../lib/function';
 import * as hashKey from '../../config/hashKey';
 
 class TransferMoneyContainer extends React.Component {
 	submitTransfer = async () => {
+		this.props.history.push({
+			pathname: '/dashboard',
+		});
+		this.props.updateIsSubmitting(true);
 		const privateKeyFromStorage = localStorage.getItem(this.props.publicKey);
 		const privateKey = hashKey.decode(privateKeyFromStorage);
 		if (this.props.amount !== 0 && this.props.bandwidth !== 0) {
@@ -26,11 +31,10 @@ class TransferMoneyContainer extends React.Component {
 				this.props.bandwidthLimit
 			);
 			if (result === true) {
+				this.props.updateIsSubmitting(false);
 				alert('Transfer successful');
-				this.props.history.push({
-					pathname: '/dashboard',
-				});
 			} else {
+				this.props.updateIsSubmitting(false);
 				alert('Transfer fail');
 			}
 		} else {
@@ -65,6 +69,9 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
 	return {
+		updateIsSubmitting: data => {
+			return dispatch(updateIsSubmitting(data));
+		},
 		updateAmount: input => {
 			const data = parseInt(input);
 			return dispatch(updateAmount(data));

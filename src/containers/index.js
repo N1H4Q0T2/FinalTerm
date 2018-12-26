@@ -8,6 +8,7 @@ import Login from './Login/Login';
 import Post from './Post/Post';
 import FollowDashboard from './FollowDashboard/FollowDashboardContainer';
 import Comment from './Comment/CommentContainer';
+import Submit from './SubmitContainer/SubmitContainer';
 
 export {
 	Dashboard,
@@ -20,4 +21,5 @@ export {
 	Post,
 	FollowDashboard,
 	Comment,
+	Submit,
 };
