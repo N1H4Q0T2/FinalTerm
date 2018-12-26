@@ -11,7 +11,7 @@ import {
 	followAnotherAccount,
 } from '../../lib/function';
 import { updateRoute } from '../../actions/RouteReducerActions';
-import { updateIsSubmitting } from '../../actions/SubmitReducerActions';
+import { updateIsSubmitting, updateFollowSuccess } from '../../actions/SubmitReducerActions';
 import * as hashKey from '../../config/hashKey';
 
 class FollowDashboardContainer extends React.Component {
@@ -57,6 +57,7 @@ class FollowDashboardContainer extends React.Component {
 		);
 		if (result === true) {
 			this.props.updateIsSubmitting(false);
+			this.props.updateFollowSuccess(true);
 			alert('Following new user successful');
 		} else {
 			this.props.updateIsSubmitting(false);
@@ -89,6 +90,9 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
 	return {
+		updateFollowSuccess: data => {
+			return dispatch(updateFollowSuccess(data));
+		},
 		updateIsSubmitting: data => {
 			return dispatch(updateIsSubmitting(data));
 		},

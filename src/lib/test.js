@@ -14,7 +14,6 @@ import base32 from 'base32.js';
 import * as hashKey from '../config/hashKey';
 const vstruct = require('varstruct');
 
-
 const PlainTextContent = vstruct([
 	{ name: 'type', type: vstruct.UInt8 },
 	{ name: 'text', type: vstruct.VarString(vstruct.UInt16BE) },
@@ -154,19 +153,7 @@ const readAllTransactionsOfOneACcount = async account => {
 		const decodeData = v1.decode(data);
 		if (decodeData.operation === 'post') {
 			try {
-				console.log(item);
-				const y = Buffer.from(decodeData.params.content, 'base64');
-				const x = PlainTextContent.decode(y);
-				console.log(x);
-			} catch (e) {
-				console.log();
-			}
-		}
-		if (decodeData.operation === 'interact') {
-			try {
-				console.log(item);
 				console.log(decodeData);
-				console.log();
 				const y = Buffer.from(decodeData.params.content, 'base64');
 				const x = PlainTextContent.decode(y);
 				console.log(x);
@@ -174,30 +161,37 @@ const readAllTransactionsOfOneACcount = async account => {
 				console.log();
 			}
 		}
-		if (decodeData.operation === 'update_account') {
-			if (decodeData.params.key === 'name') {
-				try {
-					// console.log(decodeData.params.value.toString());
-				} catch (e) {
-					console.log();
-				}
-			}
-			if (decodeData.params.key === 'picture') {
-				try {
-					const data = decodeData.params.value.toString('base64');
-					//console.log(data.slice(0));
-				} catch (e) {
-					console.log();
-				}
-			}
-			if (decodeData.params.key === 'followings') {
-				const data = v1.Followings.decode(decodeData.params.value);
-				data.addresses.forEach(item => {
-					console.log(base32.encode(item));
-				});
-				console.log('==========');
-			}
-		}
+		// if (decodeData.operation === 'interact') {
+		// 	try {
+		// 		const y = Buffer.from(decodeData.params.content, 'base64');
+		// 		const x = PlainTextContent.decode(y);
+		// 	} catch (e) {
+		// 		console.log();
+		// 	}
+		// }
+		// if (decodeData.operation === 'update_account') {
+		// 	if (decodeData.params.key === 'name') {
+		// 		try {
+		// 			// console.log(decodeData.params.value.toString());
+		// 		} catch (e) {
+		// 			console.log();
+		// 		}
+		// 	}
+		// 	if (decodeData.params.key === 'picture') {
+		// 		try {
+		// 			const data = decodeData.params.value.toString('base64');
+		// 			//console.log(data.slice(0));
+		// 		} catch (e) {
+		// 			console.log();
+		// 		}
+		// 	}
+		// 	if (decodeData.params.key === 'followings') {
+		// 		const data = v1.Followings.decode(decodeData.params.value);
+		// 		data.addresses.forEach(item => {
+		// 		});
+		// 		console.log('==========');
+		// 	}
+		// }
 	});
 };
 
@@ -529,7 +523,7 @@ const reactOnePost = async (
 };
 
 const test = async () => {
-//	await readAllTransactionsOfOneACcount('GAGTD65KN2ZALVJXZUBXLEXMQQYVXFWD7GV6VA3FW32DXXERTDB5F3MU');
+
 };
 
 export { test };
